@@ -1,9 +1,10 @@
 import { createNode } from '../utils/create-node';
 import { formateTime, formateGenres } from '../utils/formatter';
+import { constants } from '../utils/constants';
 
 type FilmInfo = {
   title: string,
-  rating: number,
+  rating: string,
   year: number,
   duration: number,
   genre: string[],
@@ -15,10 +16,26 @@ type FilmInfo = {
   itFavorite: boolean,
 };
 
+type NodeMap = {
+  title: Element,
+  year: Element,
+  rating: Element,
+  duration: Element,
+  genre: Element,
+  img: HTMLImageElement,
+  commentsCount: Element,
+  inWatchList: Element,
+  itWatched: Element,
+  itFavorite: Element,
+  description: Element,
+};
+
 class FilmCard {
   private info: FilmInfo;
 
   private node!: HTMLElement;
+
+  private nodeMap!: NodeMap;
 
   constructor(info: FilmInfo) {
     this.info = info;
@@ -26,7 +43,7 @@ class FilmCard {
     this.createMarkup();
   }
 
-  createMarkup(): void {
+  private createMarkup(): void {
     const {
       title,
       rating,
@@ -41,7 +58,7 @@ class FilmCard {
       inWatchList,
     } = this.info;
 
-    const buttonActiveClass = 'film-card__controls-item--active';
+    const buttonActiveClass = constants.ACTIVE_CLASS;
 
     const template = `
       <h3 class="film-card__title">${title}</h3>
@@ -70,11 +87,64 @@ class FilmCard {
 
     filmCard.innerHTML = template;
 
+    this.nodeMap = {
+      title: filmCard.querySelector('.film-card__title')!,
+      rating: filmCard.querySelector('.film-card__rating')!,
+      year: filmCard.querySelector('.film-card__year')!,
+      duration: filmCard.querySelector('.film-card__duration')!,
+      commentsCount: filmCard.querySelector('.film-card__comments')!,
+      genre: filmCard.querySelector('.film-card__genre')!,
+      description: filmCard.querySelector('.film-card__description')!,
+      inWatchList: filmCard.querySelector('.film-card__controls-item--add-to-watchlist')!,
+      itWatched: filmCard.querySelector('.film-card__controls-item--mark-as-watched')!,
+      itFavorite: filmCard.querySelector('.film-card__controls-item--favorite')!,
+      img: filmCard.querySelector('.film-card__poster') as HTMLImageElement,
+    };
+
     this.node = filmCard;
+  }
+
+  private updateMarkup(): void {
+    const buttonActiveClass = constants.ACTIVE_CLASS;
+
+    Object.keys(this.info).forEach((key) => {
+      const node = this.nodeMap[key] as Element;
+      const option = this.info[key] as string | boolean;
+      if (typeof option !== 'boolean') {
+        node.textContent = option;
+      } else if (option) {
+        node.classList.add(buttonActiveClass);
+      } else {
+        node.classList.remove(buttonActiveClass);
+      }
+
+      if (key === 'duration') {
+        node.textContent = formateTime(+option);
+      }
+
+      if (key === 'img') {
+        const imgNode = node as HTMLImageElement;
+        imgNode.src = option.toString();
+      }
+
+      if (key === 'genre') {
+        node.textContent = formateGenres(option as unknown as string[]);
+      }
+
+      if (key === 'commentsCount') {
+        node.textContent = `${option.toString()} comments`;
+      }
+    });
   }
 
   public get element(): HTMLElement {
     return this.node;
+  }
+
+  public updateInfo(newInfo: Partial<FilmInfo>): void {
+    const oldInfo = this.info;
+    this.info = { ...oldInfo, ...newInfo };
+    this.updateMarkup();
   }
 }
 
