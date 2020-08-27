@@ -91,6 +91,9 @@ module.exports = {
   },
   devtool: isDev ? "source-map" : false,
   devServer: isDev ? devServer() : {},
+  resolve: {
+    extensions: ['.js', '.ts']
+  },
   module: {
     rules: [
       {
