@@ -3,7 +3,7 @@ import { FilmInfo } from '../../components/film-card';
 const filmData: FilmInfo[] = [
   {
     title: 'The Dance of Life',
-    rating: 8.3,
+    rating: '8.3',
     year: 1929,
     duration: 115,
     genre: ['musical'],
@@ -16,7 +16,7 @@ const filmData: FilmInfo[] = [
   },
   {
     title: 'Sagebrush Trail',
-    rating: 3.2,
+    rating: '3.2',
     year: 1933,
     duration: 54,
     genre: ['western'],
@@ -29,7 +29,7 @@ const filmData: FilmInfo[] = [
   },
   {
     title: 'The Man with the Golden Arm',
-    rating: 9.0,
+    rating: '9.0',
     year: 1955,
     duration: 119,
     genre: ['drama'],
@@ -42,7 +42,7 @@ const filmData: FilmInfo[] = [
   },
   {
     title: 'Santa Claus Conquers the Martians',
-    rating: 2.3,
+    rating: '2.3',
     year: 1964,
     duration: 81,
     genre: ['comedy'],
@@ -55,7 +55,7 @@ const filmData: FilmInfo[] = [
   },
   {
     title: 'Popeye the Sailor Meets Sindbad the Sailor',
-    rating: 6.3,
+    rating: '6.3',
     year: 1936,
     duration: 16,
     genre: ['cartoon'],
