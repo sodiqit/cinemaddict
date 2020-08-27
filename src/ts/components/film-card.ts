@@ -10,6 +10,9 @@ type FilmInfo = {
   img: string,
   commentsCount: number,
   description: string,
+  inWatchList: boolean,
+  itWatched: boolean,
+  itFavorite: boolean,
 };
 
 class FilmCard {
@@ -33,7 +36,12 @@ class FilmCard {
       img,
       commentsCount,
       description,
+      itWatched,
+      itFavorite,
+      inWatchList,
     } = this.info;
+
+    const buttonActiveClass = 'film-card__controls-item--active';
 
     const template = `
       <h3 class="film-card__title">${title}</h3>
@@ -47,9 +55,12 @@ class FilmCard {
       <p class="film-card__description">${description}</p>
       <a class="film-card__comments">${commentsCount} comments</a>
       <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist
+        ${inWatchList ? buttonActiveClass : ''}">Add to watchlist</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched
+        ${itWatched ? buttonActiveClass : ''}">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite
+        ${itFavorite ? buttonActiveClass : ''}">Mark as favorite</button>
       </form>
     `;
 
