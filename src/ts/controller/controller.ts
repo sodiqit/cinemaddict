@@ -13,13 +13,7 @@ export class Controller implements IController {
     this.model = new Model();
     this.view = new View(this);
 
-    this.model.subscribe(this.goodCall, 'dataLoaded');
-  }
-
-  @bind
-  goodCall(): void {
-    console.log('good load', this.getData());
-    this.view.render();
+    this.model.subscribe(this.view.render, 'dataLoaded');
   }
 
   getData(): FilmInfo[] {
