@@ -3,6 +3,7 @@ import { formateTime, formateGenres } from '../utils/formatter';
 import { constants } from '../utils/constants';
 
 type FilmInfo = {
+  id: number,
   title: string,
   rating: string,
   year: number,
@@ -108,6 +109,9 @@ class FilmCard {
     const buttonActiveClass = constants.ACTIVE_CLASS;
 
     Object.keys(this.info).forEach((key) => {
+      if (key === 'id') {
+        return;
+      }
       const node = this.nodeMap[key] as Element;
       const option = this.info[key] as string | boolean;
       if (typeof option !== 'boolean') {
@@ -139,6 +143,10 @@ class FilmCard {
 
   public get element(): HTMLElement {
     return this.node;
+  }
+
+  public get id(): number {
+    return this.info.id;
   }
 
   public updateInfo(newInfo: Partial<FilmInfo>): void {
