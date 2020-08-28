@@ -59,7 +59,7 @@ class FilmCard {
       inWatchList,
     } = this.info;
 
-    const buttonActiveClass = constants.ACTIVE_CLASS;
+    const buttonActiveClass = constants.CLASSES.ACTIVE_CLASS;
 
     const template = `
       <h3 class="film-card__title">${title}</h3>
@@ -106,7 +106,7 @@ class FilmCard {
   }
 
   private updateMarkup(): void {
-    const buttonActiveClass = constants.ACTIVE_CLASS;
+    const buttonActiveClass = constants.CLASSES.ACTIVE_CLASS;
 
     Object.keys(this.info).forEach((key) => {
       if (key === 'id') {
