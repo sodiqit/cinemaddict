@@ -1,21 +1,28 @@
+import { IObservable, Observable } from '../utils/observable';
 import { getFilmData } from '../utils/mock/mock-film-data';
 import { FilmInfo } from '../components/film-card';
 
-interface IModel {
-  getData(): Promise<FilmInfo[] | void>,
+interface IModel extends IObservable {
+  fetchData(): Promise<FilmInfo[] | void>,
+  getData(): FilmInfo[],
 }
 
-class Model implements IModel {
+class Model extends Observable implements IModel {
   private data!: FilmInfo[];
 
   constructor() {
-    this.getData().then(() => this.data).catch((err) => new Error(err));
+    super();
+    this.fetchData().then(() => this.notify('dataLoaded')).catch(() => this.notify('errorLoad'));
   }
 
-  getData(): Promise<FilmInfo[] | void> {
-    return getFilmData(15).then((data) => {
-      this.data = data;
+  fetchData(): Promise<FilmInfo[] | void> {
+    return getFilmData(15).then((films) => {
+      this.data = films;
     });
+  }
+
+  getData(): FilmInfo[] {
+    return this.data;
   }
 }
 
