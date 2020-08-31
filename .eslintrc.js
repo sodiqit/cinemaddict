@@ -32,7 +32,7 @@ module.exports = {
         'plugin:sonarjs/recommended'
     ],
     rules: {
-        'max-len': ["error", { "code": 130 }],
+        'max-len': 0,
         'no-underscore-dangle': ["error", { "allowAfterThis": true }],
         "no-restricted-globals": 0,
         /* ------ PLUGINS ------- */
@@ -55,7 +55,7 @@ module.exports = {
         // promise
         'promise/catch-or-return': 2,
         'promise/param-names': 2,
-        'promise/always-return': 2,
+        'promise/always-return': 0,
         'promise/no-new-statics': 2,
         'promise/valid-params': 2,
         // optimize-regex
