@@ -54,6 +54,7 @@ class View extends Observable implements IView {
     this.renderFilms(5);
 
     if (this.counter >= this.filmCards.length) {
+      this.pageNodesMap.showMoreButton.removeEventListener('click', this.showMoreHandler);
       this.pageNodesMap.showMoreButton.remove();
     }
   }
@@ -89,7 +90,7 @@ class View extends Observable implements IView {
 
   @bind
   public renderError(): void {
-    this.pageNodesMap.filmListContainer.innerHTML = 'Films not loaded!';
+    this.pageNodesMap.filmListContainer.innerHTML = 'There are no movies in our database.';
   }
 
   @bind
