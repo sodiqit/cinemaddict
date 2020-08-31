@@ -46,6 +46,16 @@ class View extends Observable implements IView {
     this.filmCards = [];
     this.counter = 0;
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
+    this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
+  }
+
+  @bind
+  private showMoreHandler(): void {
+    this.renderFilms(5);
+
+    if (this.counter >= this.filmCards.length) {
+      this.pageNodesMap.showMoreButton.remove();
+    }
   }
 
   private cacheCards() {
@@ -68,8 +78,10 @@ class View extends Observable implements IView {
     const fragment = document.createDocumentFragment();
 
     for (let i = this.counter - count; i <= this.counter - 1; i += 1) {
-      const { element } = this.filmCards[i];
-      fragment.appendChild(element);
+      if (this.filmCards[i]) {
+        const { element } = this.filmCards[i];
+        fragment.appendChild(element);
+      }
     }
 
     this.pageNodesMap.filmListContainer.appendChild(fragment);
