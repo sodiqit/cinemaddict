@@ -1,5 +1,5 @@
 import { createNode } from '../utils/create-node';
-import { formateTime, formateGenres } from '../utils/formatter';
+import * as Formatter from '../utils/formatter';
 import { constants } from '../utils/constants';
 
 type FilmInfo = {
@@ -66,11 +66,11 @@ class FilmCard {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${year}</span>
-        <span class="film-card__duration">${formateTime(duration)}</span>
-        <span class="film-card__genre">${formateGenres(genre)}</span>
+        <span class="film-card__duration">${Formatter.formateTime(duration)}</span>
+        <span class="film-card__genre">${Formatter.formateGenres(genre)}</span>
       </p>
       <img src="${img}" alt="" class="film-card__poster">
-      <p class="film-card__description">${description}</p>
+      <p class="film-card__description">${Formatter.formateDesc(description)}</p>
       <a class="film-card__comments">${commentsCount} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist
@@ -123,7 +123,11 @@ class FilmCard {
       }
 
       if (key === 'duration') {
-        node.textContent = formateTime(+option);
+        node.textContent = Formatter.formateTime(+option);
+      }
+
+      if (key === 'description') {
+        node.textContent = Formatter.formateDesc(option as string);
       }
 
       if (key === 'img') {
@@ -132,7 +136,7 @@ class FilmCard {
       }
 
       if (key === 'genre') {
-        node.textContent = formateGenres(option as unknown as string[]);
+        node.textContent = Formatter.formateGenres(option as unknown as string[]);
       }
 
       if (key === 'commentsCount') {

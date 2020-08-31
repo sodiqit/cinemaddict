@@ -17,7 +17,15 @@ const formateGenres = (genres: string[]): string => {
   return genreCopy.join(', ');
 };
 
+const formateDesc = (description: string): string => {
+  if (description.length >= 238) {
+    return `${description.slice(0, 238)}...`;
+  }
+  return description;
+};
+
 export {
+  formateDesc,
   formateTime,
   formateGenres,
 };

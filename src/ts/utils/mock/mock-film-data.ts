@@ -16,7 +16,7 @@ const createFilmData = (count: number): Promise<FilmInfo[]> => new Promise((reso
       id: i,
       title: mockData.titles[randomIndex],
       rating: (Math.random() * 10).toFixed(1),
-      description: 'Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington. The Martians Momar ("Mom Martian") and Kimar ("King Martian") are worried that their children Girmar.',
+      description: 'Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington. The Martians Momar ("Mom Martian") and Kimar ("King Martian") are worried that their children Girmar. Are worried that their children Girmar.',
       img: mockData.imgs[randomIndex],
       genre: [mockData.genres[randomIndex]],
       commentsCount: Math.floor(Math.random() * 100),
