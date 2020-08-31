@@ -14,6 +14,7 @@ export class Controller implements IController {
     this.view = new View(this);
 
     this.model.subscribe(this.view.render, 'dataLoaded');
+    this.model.subscribe(this.view.renderError, 'errorLoad');
   }
 
   getData(): FilmInfo[] {

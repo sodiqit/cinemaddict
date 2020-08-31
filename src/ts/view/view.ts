@@ -6,6 +6,7 @@ import { constants } from '../utils/constants';
 
 interface IView extends IObservable {
   render(): void,
+  renderError(): void,
 }
 
 type PageNodesMap = {
@@ -41,6 +42,7 @@ class View extends Observable implements IView {
     };
 
     this.filmCards = [];
+    this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
   }
 
   private cacheCards() {
@@ -66,6 +68,11 @@ class View extends Observable implements IView {
     });
 
     this.pageNodesMap.filmListContainer.appendChild(fragment);
+  }
+
+  @bind
+  public renderError(): void {
+    this.pageNodesMap.filmListContainer.innerHTML = 'Films not loaded!';
   }
 
   @bind
