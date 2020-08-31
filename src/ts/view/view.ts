@@ -27,6 +27,8 @@ class View extends Observable implements IView {
 
   private filmCards: FilmCard[];
 
+  private counter: number;
+
   constructor(controller: IController) {
     super();
     this.controller = controller;
@@ -42,6 +44,7 @@ class View extends Observable implements IView {
     };
 
     this.filmCards = [];
+    this.counter = 0;
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
   }
 
@@ -55,17 +58,19 @@ class View extends Observable implements IView {
     });
   }
 
-  private renderFilms(): void {
-    this.pageNodesMap.filmListContainer.innerHTML = '';
+  private renderFilms(count = 5): void {
     if (this.filmCards.length === 0) {
       this.cacheCards();
     }
 
+    this.counter += count;
+
     const fragment = document.createDocumentFragment();
 
-    this.filmCards.forEach((filmCard) => {
-      fragment.appendChild(filmCard.element);
-    });
+    for (let i = this.counter - count; i <= this.counter - 1; i += 1) {
+      const { element } = this.filmCards[i];
+      fragment.appendChild(element);
+    }
 
     this.pageNodesMap.filmListContainer.appendChild(fragment);
   }
@@ -77,6 +82,7 @@ class View extends Observable implements IView {
 
   @bind
   public render(): void {
+    this.pageNodesMap.filmListContainer.innerHTML = '';
     this.renderFilms();
   }
 }
