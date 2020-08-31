@@ -4,7 +4,7 @@ import { Model, IModel } from '../model/model';
 import { View, IView } from '../view/view';
 import { IController } from './controller-interface';
 
-export class Controller implements IController {
+export class PageController implements IController {
   private model: IModel;
 
   private view: IView;
