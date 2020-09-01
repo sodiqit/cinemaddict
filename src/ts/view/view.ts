@@ -2,6 +2,7 @@ import { bind } from 'bind-decorator';
 import { IObservable, Observable } from '../utils/observable';
 import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card';
+import { FilmPopup } from '../components/film-popup';
 import { constants } from '../utils/constants';
 
 interface IView extends IObservable {
@@ -20,12 +21,20 @@ type PageNodesMap = {
   profileRating: Element,
 };
 
+type ViewFilm = {
+  film: {
+    card: FilmCard,
+    popup: FilmPopup,
+  },
+  id: string,
+};
+
 class View extends Observable implements IView {
   private controller: IController;
 
   private pageNodesMap: PageNodesMap;
 
-  private filmCards: FilmCard[];
+  private films: ViewFilm[];
 
   private counter: number;
 
@@ -43,7 +52,7 @@ class View extends Observable implements IView {
       profileRating: document.querySelector(`.${constants.CLASSES.PROFILE_RATING}`)!,
     };
 
-    this.filmCards = [];
+    this.films = [];
     this.counter = 0;
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
     this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
@@ -53,7 +62,7 @@ class View extends Observable implements IView {
   private showMoreHandler(): void {
     this.renderFilms(5);
 
-    if (this.counter >= this.filmCards.length) {
+    if (this.counter >= this.films.length) {
       this.pageNodesMap.showMoreButton.removeEventListener('click', this.showMoreHandler);
       this.pageNodesMap.showMoreButton.remove();
     }
@@ -63,14 +72,23 @@ class View extends Observable implements IView {
     const films = this.controller.getData();
 
     films.forEach((film) => {
+      const { id } = film;
       const filmCard = new FilmCard(film);
+      const filmPopup = new FilmPopup(film);
+      const viewFilm = {
+        film: {
+          card: filmCard,
+          popup: filmPopup,
+        },
+        id: id.toString(),
+      };
 
-      this.filmCards.push(filmCard);
+      this.films.push(viewFilm);
     });
   }
 
   private renderFilms(count = 5): void {
-    if (this.filmCards.length === 0) {
+    if (this.films.length === 0) {
       this.cacheCards();
     }
 
@@ -79,8 +97,8 @@ class View extends Observable implements IView {
     const fragment = document.createDocumentFragment();
 
     for (let i = this.counter - count; i <= this.counter - 1; i += 1) {
-      if (this.filmCards[i]) {
-        const { element } = this.filmCards[i];
+      if (this.films[i]) {
+        const { element } = this.films[i].film.card;
         fragment.appendChild(element);
       }
     }
