@@ -1,4 +1,4 @@
-const formateTime = (time: number): string => {
+const formatTime = (time: number): string => {
   const hours = Math.floor(time / 60);
   if (hours >= 1) {
     return `${hours}h ${time - hours * 60}m`;
@@ -6,7 +6,7 @@ const formateTime = (time: number): string => {
   return `${time}m`;
 };
 
-const formateGenres = (genres: string[]): string => {
+const formatGenres = (genres: string[]): string => {
   const genreCopy = genres.slice();
   const firstGenre = genreCopy[0];
   const newFirstGenre = `${firstGenre[0].toUpperCase()}${firstGenre.slice(1)}`;
@@ -17,15 +17,18 @@ const formateGenres = (genres: string[]): string => {
   return genreCopy.join(', ');
 };
 
-const formateDesc = (description: string): string => {
-  if (description.length >= 238) {
-    return `${description.slice(0, 238)}...`;
+const formatDesc = (description: string): string => {
+  if (description.length >= 138) {
+    return `${description.slice(0, 138)}...`;
   }
   return description;
 };
 
+const formatDate = (date: string): string => date;
+
 export {
-  formateDesc,
-  formateTime,
-  formateGenres,
+  formatDesc,
+  formatTime,
+  formatGenres,
+  formatDate,
 };
