@@ -40,7 +40,7 @@ const createFilmData = (count: number): Promise<FilmInfo[]> => new Promise((reso
   for (let i = 0; i < count; i += 1) {
     const randomIndex = Math.floor(Math.random() * 4) + 1;
     const mockFilm: FilmInfo = {
-      id: i,
+      id: i.toString(),
       title: mockData.titles[randomIndex],
       alternativeTitle: mockData.titles[randomIndex],
       rating: (Math.random() * 10).toFixed(1),
