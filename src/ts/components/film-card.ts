@@ -13,9 +13,15 @@ type Comment = {
 type FilmInfo = {
   id: number,
   title: string,
+  alternativeTitle: string,
   rating: string,
-  year: number,
+  ageRating: number,
   duration: number,
+  releaseDate: string,
+  country: string,
+  directors: string[],
+  actors: string[],
+  writers: string[],
   genre: string[],
   img: string,
   description: string,
@@ -56,7 +62,7 @@ class FilmCard {
     const {
       title,
       rating,
-      year,
+      releaseDate,
       duration,
       genre,
       img,
@@ -73,12 +79,12 @@ class FilmCard {
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${year}</span>
-        <span class="film-card__duration">${Formatter.formateTime(duration)}</span>
-        <span class="film-card__genre">${Formatter.formateGenres(genre)}</span>
+        <span class="film-card__year">${releaseDate.slice(-4)}</span>
+        <span class="film-card__duration">${Formatter.formatTime(duration)}</span>
+        <span class="film-card__genre">${Formatter.formatGenres(genre)}</span>
       </p>
       <img src="${img}" alt="" class="film-card__poster">
-      <p class="film-card__description">${Formatter.formateDesc(description)}</p>
+      <p class="film-card__description">${Formatter.formatDesc(description)}</p>
       <a class="film-card__comments">${comments.length} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist
@@ -134,11 +140,11 @@ class FilmCard {
       }
 
       if (key === 'duration') {
-        node.textContent = Formatter.formateTime(+option);
+        node.textContent = Formatter.formatTime(+option);
       }
 
       if (key === 'description') {
-        node.textContent = Formatter.formateDesc(option as string);
+        node.textContent = Formatter.formatDesc(option as string);
       }
 
       if (key === 'img') {
@@ -147,7 +153,7 @@ class FilmCard {
       }
 
       if (key === 'genre') {
-        node.textContent = Formatter.formateGenres(option as unknown as string[]);
+        node.textContent = Formatter.formatGenres(option as unknown as string[]);
       }
 
       if (key === 'comments') {
