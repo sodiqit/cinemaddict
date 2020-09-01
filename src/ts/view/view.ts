@@ -87,7 +87,7 @@ class View extends Observable implements IView {
     });
   }
 
-  private renderFilms(count = 5): void {
+  private renderFilms(count: number): void {
     if (this.films.length === 0) {
       this.cacheCards();
     }
@@ -114,7 +114,7 @@ class View extends Observable implements IView {
   @bind
   public render(): void {
     this.pageNodesMap.filmListContainer.innerHTML = '';
-    this.renderFilms();
+    this.renderFilms(5);
   }
 }
 
