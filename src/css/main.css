@@ -525,6 +525,26 @@ button {
   overflow: hidden;
 }
 
+@keyframes show {
+  from {
+    transform: translate(3000px);
+  }
+
+  to {
+    transform: translate(0);
+  }
+}
+
+@keyframes hide {
+  from {
+    transform: translate(0px);
+  }
+
+  to {
+    transform: translate(3000px);
+  }
+}
+
 .film-details {
   position: fixed;
   height: 100vh;
