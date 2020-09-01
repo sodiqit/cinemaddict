@@ -1,16 +1,25 @@
+import { bind } from 'bind-decorator';
 import { FilmInfo } from './film-card';
 import { createNode } from '../utils/create-node';
+import { constants } from '../utils/constants';
+import { Observable } from '../utils/observable';
 import * as Formatter from '../utils/formatter';
 
-class FilmPopup {
+class FilmPopup extends Observable {
   private filmInfo: FilmInfo;
 
   private node!: HTMLElement;
 
   constructor(filmInfo: FilmInfo) {
+    super();
     this.filmInfo = filmInfo;
 
     this.createMarkup();
+  }
+
+  @bind
+  private closePopupHandler(): void {
+    this.notify('closePopup', this.id);
   }
 
   private createMarkup(): void {
@@ -171,6 +180,8 @@ class FilmPopup {
     </section>`;
 
     this.node.innerHTML = template;
+
+    this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.CLOSE_BUTTON}`)?.addEventListener('click', this.closePopupHandler);
   }
 
   get element(): HTMLElement {
