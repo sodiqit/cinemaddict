@@ -2,6 +2,14 @@ import { createNode } from '../utils/create-node';
 import * as Formatter from '../utils/formatter';
 import { constants } from '../utils/constants';
 
+type Comment = {
+  author: string,
+  date: string,
+  text: string,
+  emoji: string,
+  id: number,
+};
+
 type FilmInfo = {
   id: number,
   title: string,
@@ -10,11 +18,11 @@ type FilmInfo = {
   duration: number,
   genre: string[],
   img: string,
-  commentsCount: number,
   description: string,
   inWatchList: boolean,
   itWatched: boolean,
   itFavorite: boolean,
+  comments: Comment[],
 };
 
 type NodeMap = {
@@ -24,7 +32,7 @@ type NodeMap = {
   duration: Element,
   genre: Element,
   img: HTMLImageElement,
-  commentsCount: Element,
+  comments: Element,
   inWatchList: Element,
   itWatched: Element,
   itFavorite: Element,
@@ -52,7 +60,7 @@ class FilmCard {
       duration,
       genre,
       img,
-      commentsCount,
+      comments,
       description,
       itWatched,
       itFavorite,
@@ -71,7 +79,7 @@ class FilmCard {
       </p>
       <img src="${img}" alt="" class="film-card__poster">
       <p class="film-card__description">${Formatter.formateDesc(description)}</p>
-      <a class="film-card__comments">${commentsCount} comments</a>
+      <a class="film-card__comments">${comments.length} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist
         ${inWatchList ? buttonActiveClass : ''}">Add to watchlist</button>
@@ -93,7 +101,7 @@ class FilmCard {
       rating: filmCard.querySelector('.film-card__rating')!,
       year: filmCard.querySelector('.film-card__year')!,
       duration: filmCard.querySelector('.film-card__duration')!,
-      commentsCount: filmCard.querySelector('.film-card__comments')!,
+      comments: filmCard.querySelector('.film-card__comments')!,
       genre: filmCard.querySelector('.film-card__genre')!,
       description: filmCard.querySelector('.film-card__description')!,
       inWatchList: filmCard.querySelector('.film-card__controls-item--add-to-watchlist')!,
@@ -112,13 +120,16 @@ class FilmCard {
       if (key === 'id') {
         return;
       }
+
       const node = this.nodeMap[key] as Element;
-      const option = this.info[key] as string | boolean;
-      if (typeof option !== 'boolean') {
-        node.textContent = option;
-      } else if (option) {
+      const option = this.info[key] as string | boolean | Comment[];
+      if (typeof option !== 'boolean' || typeof option !== 'object') {
+        node.textContent = option as string;
+      }
+
+      if (typeof option === 'boolean' && option === true) {
         node.classList.add(buttonActiveClass);
-      } else {
+      } else if (typeof option === 'boolean' && option === false) {
         node.classList.remove(buttonActiveClass);
       }
 
@@ -139,8 +150,9 @@ class FilmCard {
         node.textContent = Formatter.formateGenres(option as unknown as string[]);
       }
 
-      if (key === 'commentsCount') {
-        node.textContent = `${option.toString()} comments`;
+      if (key === 'comments') {
+        const comments = option as Comment[];
+        node.textContent = `${comments.length} comments`;
       }
     });
   }
@@ -160,4 +172,4 @@ class FilmCard {
   }
 }
 
-export { FilmCard, FilmInfo };
+export { FilmCard, FilmInfo, Comment };
