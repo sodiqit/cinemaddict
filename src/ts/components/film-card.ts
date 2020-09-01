@@ -1,6 +1,8 @@
+import { bind } from 'bind-decorator';
+import { Observable } from '../utils/observable';
 import { createNode } from '../utils/create-node';
-import * as Formatter from '../utils/formatter';
 import { constants } from '../utils/constants';
+import * as Formatter from '../utils/formatter';
 
 type Comment = {
   author: string,
@@ -11,7 +13,7 @@ type Comment = {
 };
 
 type FilmInfo = {
-  id: number,
+  id: string,
   title: string,
   alternativeTitle: string,
   rating: string,
@@ -45,7 +47,7 @@ type NodeMap = {
   description: Element,
 };
 
-class FilmCard {
+class FilmCard extends Observable {
   private info: FilmInfo;
 
   private node!: HTMLElement;
@@ -53,9 +55,15 @@ class FilmCard {
   private nodeMap!: NodeMap;
 
   constructor(info: FilmInfo) {
+    super();
     this.info = info;
 
     this.createMarkup();
+  }
+
+  @bind
+  private showPopupHandler(): void {
+    this.notify('showPopup', this.id);
   }
 
   private createMarkup(): void {
@@ -116,6 +124,10 @@ class FilmCard {
       img: filmCard.querySelector('.film-card__poster') as HTMLImageElement,
     };
 
+    this.nodeMap.title.addEventListener('click', this.showPopupHandler);
+    this.nodeMap.img.addEventListener('click', this.showPopupHandler);
+    this.nodeMap.comments.addEventListener('click', this.showPopupHandler);
+
     this.node = filmCard;
   }
 
@@ -167,7 +179,7 @@ class FilmCard {
     return this.node;
   }
 
-  public get id(): number {
+  public get id(): string {
     return this.info.id;
   }
 

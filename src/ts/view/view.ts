@@ -68,12 +68,27 @@ class View extends Observable implements IView {
     }
   }
 
+  @bind
+  private renderPopup(id: string): void {
+    const needFilm = this.films.filter((film) => film.id === id)[0];
+
+    if (needFilm) {
+      const { element } = needFilm.film.popup;
+      element.style.animationDuration = '0.5s';
+      element.style.animationName = 'show';
+      element.style.animationFillMode = 'forwards';
+      element.style.transform = 'translate(1500px)';
+      document.body.appendChild(element);
+    }
+  }
+
   private cacheCards() {
     const films = this.controller.getData();
 
     films.forEach((film) => {
       const { id } = film;
       const filmCard = new FilmCard(film);
+      filmCard.subscribe(this.renderPopup, 'showPopup');
       const filmPopup = new FilmPopup(film);
       const viewFilm = {
         film: {

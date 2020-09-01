@@ -177,7 +177,7 @@ class FilmPopup {
     return this.node;
   }
 
-  get id(): number {
+  get id(): string {
     return this.filmInfo.id;
   }
 }
