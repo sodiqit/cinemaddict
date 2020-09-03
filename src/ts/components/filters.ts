@@ -1,7 +1,6 @@
 import { IView, ViewFilm } from '../view/view-interface';
 import { createNode } from '../utils/create-node';
 import { constants } from '../utils/constants';
-import { Observable } from '../utils/observable';
 
 type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
@@ -24,7 +23,7 @@ type NodeMap = {
   },
 };
 
-export class Filters extends Observable {
+export class Filters {
   private view: IView;
 
   private node!: DocumentFragment;
