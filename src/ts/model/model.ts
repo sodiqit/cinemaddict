@@ -1,29 +1,40 @@
-import { IObservable, Observable } from '../utils/observable';
+import { bind } from 'bind-decorator';
+import { IModel, FilmInfo } from './model-interface';
+import { Observable } from '../utils/observable';
 import { getFilmData } from '../utils/mock/mock-film-data';
-import { FilmInfo } from '../components/film-card';
-
-interface IModel extends IObservable {
-  fetchData(): Promise<FilmInfo[] | void>,
-  getData(): FilmInfo[],
-}
 
 class Model extends Observable implements IModel {
-  private data!: FilmInfo[];
+  private films!: FilmInfo[];
 
   constructor() {
     super();
-    this.fetchData().then(() => this.notify('dataLoaded')).catch(() => this.notify('errorLoad'));
+    this.fetchData().then(() => this.notify('dataLoaded')).catch(() => this.notify('errorLoaded'));
   }
 
-  fetchData(): Promise<FilmInfo[] | void> {
+  private fetchData(): Promise<FilmInfo[] | void> {
     return getFilmData(15).then((films) => {
-      this.data = films;
+      this.films = films;
     });
   }
 
-  getData(): FilmInfo[] {
-    return this.data;
+  @bind
+  public updateFilm(info: { id: string, name: string, value: boolean }): void {
+    const {
+      id,
+      name,
+      value,
+    } = info;
+    const needFilm = this.films.filter((film) => film.id === id)[0];
+
+    if (needFilm) {
+      needFilm[name] = value;
+      this.notify('filmUpdated', id);
+    }
+  }
+
+  public getData(): FilmInfo[] {
+    return this.films;
   }
 }
 
-export { Model, IModel };
+export { Model };

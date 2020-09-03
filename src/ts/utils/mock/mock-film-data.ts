@@ -1,4 +1,4 @@
-import { FilmInfo, Comment } from '../../components/film-card';
+import { FilmInfo, Comment } from '../../model/model-interface';
 
 const mockData = {
   titles: ['The Dance of Life', 'Sagebrush Trail', 'The Man with the Golden Arm', 'Santa Claus Conquers the Martians', 'Popeye the Sailor Meets Sindbad the Sailor'],

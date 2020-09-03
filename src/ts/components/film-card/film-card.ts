@@ -1,60 +1,18 @@
 import { bind } from 'bind-decorator';
-import { Observable } from '../utils/observable';
-import { createNode } from '../utils/create-node';
-import { constants } from '../utils/constants';
-import * as Formatter from '../utils/formatter';
-
-type Comment = {
-  author: string,
-  date: string,
-  text: string,
-  emoji: string,
-  id: number,
-};
-
-type FilmInfo = {
-  id: string,
-  title: string,
-  alternativeTitle: string,
-  rating: string,
-  ageRating: number,
-  duration: number,
-  releaseDate: string,
-  country: string,
-  directors: string[],
-  actors: string[],
-  writers: string[],
-  genre: string[],
-  img: string,
-  description: string,
-  inWatchList: boolean,
-  itWatched: boolean,
-  itFavorite: boolean,
-  comments: Comment[],
-};
-
-type NodeMap = {
-  title: Element,
-  year: Element,
-  rating: Element,
-  duration: Element,
-  genre: Element,
-  img: HTMLImageElement,
-  comments: Element,
-  inWatchList: Element,
-  itWatched: Element,
-  itFavorite: Element,
-  description: Element,
-};
+import { FilmCardInfo, NodeMap } from './film-card-interface';
+import { Observable } from '../../utils/observable';
+import { createNode } from '../../utils/create-node';
+import { constants } from '../../utils/constants';
+import * as Formatter from '../../utils/formatter';
 
 class FilmCard extends Observable {
-  private info: FilmInfo;
+  private info: FilmCardInfo;
 
   private node!: HTMLElement;
 
   private nodeMap!: NodeMap;
 
-  constructor(info: FilmInfo) {
+  constructor(info: FilmCardInfo) {
     super();
     this.info = info;
 
@@ -64,6 +22,22 @@ class FilmCard extends Observable {
   @bind
   private showPopupHandler(): void {
     this.notify('showPopup', this.id);
+  }
+
+  @bind
+  private userControllsHandler(e: Event): void {
+    e.preventDefault();
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('button')) {
+      return;
+    }
+    const controllInfo = {
+      id: this.id,
+      name: target.dataset.type,
+      value: target.dataset.active !== 'true',
+    };
+
+    this.notify('controllUpdated', controllInfo);
   }
 
   private createMarkup(): void {
@@ -93,13 +67,13 @@ class FilmCard extends Observable {
       </p>
       <img src="${img}" alt="" class="film-card__poster">
       <p class="film-card__description">${Formatter.formatDesc(description)}</p>
-      <a class="film-card__comments">${comments.length} comments</a>
+      <a class="film-card__comments">${comments} comments</a>
       <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist
+        <button data-type="inWatchlist" data-active="${inWatchList ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--add-to-watchlist
         ${inWatchList ? buttonActiveClass : ''}">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched
+        <button data-type="itWatched" data-active="${itWatched ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--mark-as-watched
         ${itWatched ? buttonActiveClass : ''}">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite
+        <button data-type="itFavorite" data-active="${itFavorite ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--favorite
         ${itFavorite ? buttonActiveClass : ''}">Mark as favorite</button>
       </form>
     `;
@@ -122,11 +96,13 @@ class FilmCard extends Observable {
       itWatched: filmCard.querySelector('.film-card__controls-item--mark-as-watched')!,
       itFavorite: filmCard.querySelector('.film-card__controls-item--favorite')!,
       img: filmCard.querySelector('.film-card__poster') as HTMLImageElement,
+      controlls: filmCard.querySelector('.film-card__controls') as HTMLImageElement,
     };
 
     this.nodeMap.title.addEventListener('click', this.showPopupHandler);
     this.nodeMap.img.addEventListener('click', this.showPopupHandler);
     this.nodeMap.comments.addEventListener('click', this.showPopupHandler);
+    this.nodeMap.controlls.addEventListener('click', this.userControllsHandler);
 
     this.node = filmCard;
   }
@@ -138,8 +114,7 @@ class FilmCard extends Observable {
       if (key === 'id') {
         return;
       }
-
-      const node = this.nodeMap[key] as Element;
+      const node = this.nodeMap[key] as HTMLElement;
       const option = this.info[key] as string | boolean | Comment[];
       if (typeof option !== 'boolean' || typeof option !== 'object') {
         node.textContent = option as string;
@@ -147,8 +122,10 @@ class FilmCard extends Observable {
 
       if (typeof option === 'boolean' && option === true) {
         node.classList.add(buttonActiveClass);
+        node.dataset.active = 'true';
       } else if (typeof option === 'boolean' && option === false) {
         node.classList.remove(buttonActiveClass);
+        node.dataset.active = 'false';
       }
 
       if (key === 'duration') {
@@ -183,11 +160,11 @@ class FilmCard extends Observable {
     return this.info.id;
   }
 
-  public updateInfo(newInfo: Partial<FilmInfo>): void {
+  public updateInfo(newInfo: FilmCardInfo): void {
     const oldInfo = this.info;
     this.info = { ...oldInfo, ...newInfo };
     this.updateMarkup();
   }
 }
 
-export { FilmCard, FilmInfo, Comment };
+export { FilmCard, FilmCardInfo };

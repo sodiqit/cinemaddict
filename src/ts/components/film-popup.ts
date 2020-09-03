@@ -1,5 +1,5 @@
 import { bind } from 'bind-decorator';
-import { FilmInfo } from './film-card';
+import { FilmInfo } from '../model/model-interface';
 import { createNode } from '../utils/create-node';
 import { constants } from '../utils/constants';
 import { Observable } from '../utils/observable';
@@ -182,6 +182,12 @@ class FilmPopup extends Observable {
     this.node.innerHTML = template;
 
     this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.CLOSE_BUTTON}`)?.addEventListener('click', this.closePopupHandler);
+  }
+
+  public updateInfo(newFilmInfo: Partial<FilmInfo>): void {
+    const oldFilmInfo = this.filmInfo;
+
+    this.filmInfo = { ...oldFilmInfo, ...newFilmInfo };
   }
 
   get element(): HTMLElement {

@@ -1,11 +1,12 @@
 import { bind } from 'bind-decorator';
 import { IObservable, Observable } from '../utils/observable';
 import { IController } from '../controller/controller-interface';
-import { FilmCard } from '../components/film-card';
+import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
 import { constants } from '../utils/constants';
 
 interface IView extends IObservable {
+  updateFilmCard(id: string): void,
   render(): void,
   renderError(): void,
 }
@@ -69,7 +70,7 @@ class View extends Observable implements IView {
   }
 
   @bind
-  removePopup(id: string): void {
+  private removePopup(id: string): void {
     const needFilm = this.films.filter((film) => film.id === id)[0];
 
     if (needFilm) {
@@ -98,6 +99,11 @@ class View extends Observable implements IView {
     }
   }
 
+  @bind
+  private provideControllInfo(info: { id: string, name: string, value: boolean }): void {
+    this.notify('controllUpdated', info);
+  }
+
   private cacheCards() {
     const films = this.controller.getData();
 
@@ -105,6 +111,8 @@ class View extends Observable implements IView {
       const { id } = film;
       const filmCard = new FilmCard(film);
       filmCard.subscribe(this.renderPopup, 'showPopup');
+      filmCard.subscribe(this.provideControllInfo, 'controllUpdated');
+
       const filmPopup = new FilmPopup(film);
       filmPopup.subscribe(this.removePopup, 'closePopup');
       const viewFilm = {
@@ -136,6 +144,17 @@ class View extends Observable implements IView {
     }
 
     this.pageNodesMap.filmListContainer.appendChild(fragment);
+  }
+
+  @bind
+  public updateFilmCard(id: string): void {
+    const films = this.controller.getData();
+    const needFilm = films.filter((film) => film.id === id)[0];
+    const needFilmCard = this.films.filter((film) => film.id === id)[0].film.card;
+
+    if (needFilm && needFilmCard) {
+      needFilmCard.updateInfo(needFilm);
+    }
   }
 
   @bind

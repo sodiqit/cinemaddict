@@ -1,4 +1,4 @@
-import { FilmInfo } from '../components/film-card';
+import { FilmInfo } from '../model/model-interface';
 
 export interface IController {
   getData(): FilmInfo[]
