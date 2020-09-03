@@ -1,15 +1,38 @@
 import { IView, ViewFilm } from '../view/view-interface';
 import { createNode } from '../utils/create-node';
 import { constants } from '../utils/constants';
+import { Observable } from '../utils/observable';
 
-type FiltersType = 'watchlist' | 'history' | 'favorite';
+type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
-export class Filters {
+type NodeMap = {
+  all: {
+    item: Element,
+    counter: Element
+  },
+  watchlist: {
+    item: Element,
+    counter: Element
+  },
+  favorite: {
+    item: Element,
+    counter: Element
+  },
+  history: {
+    item: Element,
+    counter: Element
+  },
+};
+
+export class Filters extends Observable {
   private view: IView;
 
   private node!: DocumentFragment;
 
+  private nodeMap!: NodeMap;
+
   constructor(view: IView) {
+    super();
     this.view = view;
     this.createMarkup();
   }
@@ -22,6 +45,10 @@ export class Filters {
     };
 
     const films = this.view.getFilms();
+
+    if (filterType === 'all') {
+      return films;
+    }
 
     return films.filter((viewFilm) => viewFilm.film.card[names[filterType]]);
   }
@@ -51,9 +78,40 @@ export class Filters {
     fragment.appendChild(stat);
 
     this.node = fragment;
+
+    const [all, watchlist, history, favorite] = Array.from(this.node.querySelectorAll(`.${constants.CLASSES.FILTERS.ITEM}`)!);
+
+    this.nodeMap = {
+      all: {
+        item: all,
+        counter: all.querySelector(`.${constants.CLASSES.FILTERS.COUNTER}`)!,
+      },
+      watchlist: {
+        item: watchlist,
+        counter: watchlist.querySelector(`.${constants.CLASSES.FILTERS.COUNTER}`)!,
+      },
+      history: {
+        item: history,
+        counter: history.querySelector(`.${constants.CLASSES.FILTERS.COUNTER}`)!,
+      },
+      favorite: {
+        item: favorite,
+        counter: favorite.querySelector(`.${constants.CLASSES.FILTERS.COUNTER}`)!,
+      },
+    };
   }
 
   public get element(): DocumentFragment {
     return this.node;
+  }
+
+  public update(): void {
+    Object.keys(this.nodeMap).forEach((key) => {
+      const keyName = key as FiltersType;
+      if (key === 'all') {
+        return;
+      }
+      this.nodeMap[keyName].counter.textContent = this.filterFilms(keyName).length.toString();
+    });
   }
 }
