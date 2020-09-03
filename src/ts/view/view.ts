@@ -152,11 +152,14 @@ class View extends Observable implements IView {
   @bind
   public updateFilmCard(id: string): void {
     const films = this.controller.getData();
-    const needFilm = Formatter.formatDataForFilmCard(films.filter((film) => film.id === id)[0]);
+    const needFilm = films.filter((film) => film.id === id)[0];
+    const formattedFilm = Formatter.formatDataForFilmCard(needFilm);
     const needFilmCard = this.films.filter((film) => film.id === id)[0].film.card;
+    const needFilmPopup = this.films.filter((film) => film.id === id)[0].film.popup;
 
     if (needFilm && needFilmCard) {
-      needFilmCard.updateInfo(needFilm);
+      needFilmCard.updateInfo(formattedFilm);
+      needFilmPopup.updateInfo(needFilm);
     }
   }
 

@@ -69,7 +69,7 @@ class FilmCard extends Observable {
       <p class="film-card__description">${Formatter.formatDesc(description)}</p>
       <a class="film-card__comments">${comments} comments</a>
       <form class="film-card__controls">
-        <button data-type="inWatchlist" data-active="${inWatchList ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--add-to-watchlist
+        <button data-type="inWatchList" data-active="${inWatchList ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--add-to-watchlist
         ${inWatchList ? buttonActiveClass : ''}">Add to watchlist</button>
         <button data-type="itWatched" data-active="${itWatched ? 'true' : 'false'}" class="film-card__controls-item button film-card__controls-item--mark-as-watched
         ${itWatched ? buttonActiveClass : ''}">Mark as watched</button>
@@ -87,7 +87,7 @@ class FilmCard extends Observable {
     this.nodeMap = {
       title: filmCard.querySelector('.film-card__title')!,
       rating: filmCard.querySelector('.film-card__rating')!,
-      year: filmCard.querySelector('.film-card__year')!,
+      releaseDate: filmCard.querySelector('.film-card__year')!,
       duration: filmCard.querySelector('.film-card__duration')!,
       comments: filmCard.querySelector('.film-card__comments')!,
       genre: filmCard.querySelector('.film-card__genre')!,
@@ -115,9 +115,10 @@ class FilmCard extends Observable {
         return;
       }
       const node = this.nodeMap[key] as HTMLElement;
-      const option = this.info[key] as string | boolean | Comment[];
-      if (typeof option !== 'boolean' || typeof option !== 'object') {
-        node.textContent = option as string;
+      const option = this.info[key] as string | boolean;
+
+      if (typeof option !== 'boolean') {
+        node.textContent = option;
       }
 
       if (typeof option === 'boolean' && option === true) {
@@ -130,6 +131,11 @@ class FilmCard extends Observable {
 
       if (key === 'duration') {
         node.textContent = Formatter.formatTime(+option);
+      }
+
+      if (key === 'releaseDate') {
+        const year = option as string;
+        node.textContent = year.slice(-4);
       }
 
       if (key === 'description') {
@@ -146,8 +152,8 @@ class FilmCard extends Observable {
       }
 
       if (key === 'comments') {
-        const comments = option as Comment[];
-        node.textContent = `${comments.length} comments`;
+        const comments = option;
+        node.textContent = `${comments.toString()} comments`;
       }
     });
   }

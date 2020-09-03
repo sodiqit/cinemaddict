@@ -15,7 +15,7 @@ type FilmCardInfo = {
 
 type NodeMap = {
   title: Element,
-  year: Element,
+  releaseDate: Element,
   rating: Element,
   duration: Element,
   genre: Element,

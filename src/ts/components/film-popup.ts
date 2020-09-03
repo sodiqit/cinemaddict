@@ -188,6 +188,7 @@ class FilmPopup extends Observable {
     const oldFilmInfo = this.filmInfo;
 
     this.filmInfo = { ...oldFilmInfo, ...newFilmInfo };
+    this.createMarkup();
   }
 
   get element(): HTMLElement {

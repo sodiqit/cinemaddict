@@ -1,4 +1,3 @@
-import { bind } from 'bind-decorator';
 import { FilmInfo, IModel } from '../model/model-interface';
 import { Model } from '../model/model';
 import { View, IView } from '../view/view';
