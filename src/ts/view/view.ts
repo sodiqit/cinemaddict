@@ -151,6 +151,7 @@ class View extends Observable implements IView {
     if (needFilm && needFilmCard) {
       needFilmCard.updateInfo(formattedFilm);
       needFilmPopup.updateInfo(needFilm);
+      this.filters.update();
     }
   }
 
