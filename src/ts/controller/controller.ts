@@ -1,6 +1,7 @@
 import { FilmInfo, IModel } from '../model/model-interface';
 import { Model } from '../model/model';
-import { View, IView } from '../view/view';
+import { View } from '../view/view';
+import { IView } from '../view/view-interface';
 import { IController } from './controller-interface';
 
 export class PageController implements IController {

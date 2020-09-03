@@ -1,35 +1,12 @@
 import { bind } from 'bind-decorator';
-import { IObservable, Observable } from '../utils/observable';
+import { IView, PageNodesMap, ViewFilm } from './view-interface';
+import { Observable } from '../utils/observable';
 import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
+import { Filters } from '../components/filters';
 import { constants } from '../utils/constants';
 import * as Formatter from '../utils/formatter';
-
-interface IView extends IObservable {
-  updateFilmCard(id: string): void,
-  render(): void,
-  renderError(): void,
-}
-
-type PageNodesMap = {
-  filmListContainer: Element,
-  mostCommentedContainer: Element,
-  topRatedContainer: Element,
-  showMoreButton: Element,
-  sort: Element,
-  filters: Element,
-  navigationContainer: Element,
-  profileRating: Element,
-};
-
-type ViewFilm = {
-  film: {
-    card: FilmCard,
-    popup: FilmPopup,
-  },
-  id: string,
-};
 
 class View extends Observable implements IView {
   private controller: IController;
@@ -39,6 +16,8 @@ class View extends Observable implements IView {
   private films: ViewFilm[];
 
   private counter: number;
+
+  private filters: Filters;
 
   constructor(controller: IController) {
     super();
@@ -56,6 +35,7 @@ class View extends Observable implements IView {
 
     this.films = [];
     this.counter = 0;
+    this.filters = new Filters(this);
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
     this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
   }
@@ -65,7 +45,7 @@ class View extends Observable implements IView {
     this.renderFilms(5);
 
     if (this.counter >= this.films.length) {
-      this.pageNodesMap.showMoreButton.removeEventListener('click', this.showMoreHandler);
+      this.counter = 0;
       this.pageNodesMap.showMoreButton.remove();
     }
   }
@@ -174,6 +154,10 @@ class View extends Observable implements IView {
   public render(): void {
     this.pageNodesMap.filmListContainer.innerHTML = '';
     this.renderFilms(5);
+  }
+
+  get viewFilms(): ViewFilm[] {
+    return this.films;
   }
 }
 
