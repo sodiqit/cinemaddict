@@ -1,5 +1,10 @@
 export const constants = {
   CLASSES: {
+    FILTERS: {
+      ITEM: 'main-navigation__item',
+      COUNTER: 'main-navigation__item-count',
+      ACTIVE: 'main-navigation__item--active',
+    },
     MAIN_PAGE: {
       FILMS_CONTAINER: 'films-list__container',
       FILMS_EXTRA: 'films-list--extra',
@@ -9,7 +14,6 @@ export const constants = {
       STATS: 'main-navigation__additional',
       FILTERS: 'main-navigation',
       FILTERS_CONTAINER: 'main-navigation__items',
-      FILTER_ACTIVE: 'main-navigation__item--active',
       NAVIGATION_CONTAINER: 'main-navigation',
       PROFILE_RATING: 'profile__rating',
     },
