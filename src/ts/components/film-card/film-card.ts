@@ -166,6 +166,18 @@ class FilmCard extends Observable {
     return this.info.id;
   }
 
+  public get itWatched(): boolean {
+    return this.info.itWatched;
+  }
+
+  public get itFavorite(): boolean {
+    return this.info.itFavorite;
+  }
+
+  public get inWatchList(): boolean {
+    return this.info.inWatchList;
+  }
+
   public updateInfo(newInfo: FilmCardInfo): void {
     const oldInfo = this.info;
     this.info = { ...oldInfo, ...newInfo };
