@@ -4,6 +4,7 @@ import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
 import { constants } from '../utils/constants';
+import * as Formatter from '../utils/formatter';
 
 interface IView extends IObservable {
   updateFilmCard(id: string): void,
@@ -109,7 +110,9 @@ class View extends Observable implements IView {
 
     films.forEach((film) => {
       const { id } = film;
-      const filmCard = new FilmCard(film);
+      const formattedFilm = Formatter.formatDataForFilmCard(film);
+      const filmCard = new FilmCard(formattedFilm);
+
       filmCard.subscribe(this.renderPopup, 'showPopup');
       filmCard.subscribe(this.provideControllInfo, 'controllUpdated');
 
@@ -149,7 +152,7 @@ class View extends Observable implements IView {
   @bind
   public updateFilmCard(id: string): void {
     const films = this.controller.getData();
-    const needFilm = films.filter((film) => film.id === id)[0];
+    const needFilm = Formatter.formatDataForFilmCard(films.filter((film) => film.id === id)[0]);
     const needFilmCard = this.films.filter((film) => film.id === id)[0].film.card;
 
     if (needFilm && needFilmCard) {

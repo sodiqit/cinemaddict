@@ -1,3 +1,6 @@
+import { FilmInfo } from '../model/model-interface';
+import { FilmCardInfo } from '../components/film-card/film-card-interface';
+
 const formatTime = (time: number): string => {
   const hours = Math.floor(time / 60);
   if (hours >= 1) {
@@ -26,9 +29,32 @@ const formatDesc = (description: string): string => {
 
 const formatDate = (date: string): string => date;
 
+const formatDataForFilmCard = (data: FilmInfo): FilmCardInfo => {
+  const dataForFilmCard = {} as FilmCardInfo;
+
+  const notNeedKeys = ['alternativeTitle', 'ageRating', 'country', 'directors', 'actors', 'writers'];
+
+  Object.keys(data).forEach((key) => {
+    if (notNeedKeys.includes(key)) {
+      return;
+    }
+
+    if (key === 'comments') {
+      dataForFilmCard[key] = data[key].length;
+    } else {
+      const value = data[key] as string | string[];
+
+      dataForFilmCard[key] = value;
+    }
+  });
+
+  return dataForFilmCard;
+};
+
 export {
   formatDesc,
   formatTime,
   formatGenres,
   formatDate,
+  formatDataForFilmCard,
 };
