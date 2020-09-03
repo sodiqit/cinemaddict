@@ -1,6 +1,8 @@
+import { bind } from 'bind-decorator';
 import { IView, ViewFilm } from '../view/view-interface';
 import { createNode } from '../utils/create-node';
 import { constants } from '../utils/constants';
+import { Observable } from '../utils/observable';
 
 type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
@@ -23,7 +25,7 @@ type NodeMap = {
   },
 };
 
-export class Filters {
+export class Filters extends Observable {
   private view: IView;
 
   private node!: DocumentFragment;
@@ -31,8 +33,22 @@ export class Filters {
   private nodeMap!: NodeMap;
 
   constructor(view: IView) {
+    super();
     this.view = view;
     this.createMarkup();
+  }
+
+  @bind
+  private filterHandler(e: Event) {
+    e.preventDefault();
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains(constants.CLASSES.FILTERS.ITEM)) {
+      return;
+    }
+    const filterType = target.dataset.type as FiltersType;
+    const filteredFilms = this.filterFilms(filterType);
+
+    this.notify('filterClicked', filteredFilms);
   }
 
   private filterFilms(filterType: FiltersType): ViewFilm[] {
@@ -76,6 +92,8 @@ export class Filters {
     fragment.appendChild(stat);
 
     this.node = fragment;
+
+    node.addEventListener('click', this.filterHandler);
 
     const [all, watchlist, history, favorite] = Array.from(this.node.querySelectorAll(`.${constants.CLASSES.FILTERS.ITEM}`)!);
 
