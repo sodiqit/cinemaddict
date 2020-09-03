@@ -6,6 +6,7 @@ interface IView extends IObservable {
   updateFilmCard(id: string): void,
   render(): void,
   renderError(): void,
+  getFilms(): ViewFilm[],
 }
 
 type PageNodesMap = {

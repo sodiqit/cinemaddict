@@ -1,10 +1,10 @@
 import { bind } from 'bind-decorator';
 import { IView, PageNodesMap, ViewFilm } from './view-interface';
-import { Observable } from '../utils/observable';
 import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
 import { Filters } from '../components/filters';
+import { Observable } from '../utils/observable';
 import { constants } from '../utils/constants';
 import * as Formatter from '../utils/formatter';
 
@@ -17,7 +17,7 @@ class View extends Observable implements IView {
 
   private counter: number;
 
-  private filters: Filters;
+  private filters!: Filters;
 
   constructor(controller: IController) {
     super();
@@ -35,7 +35,6 @@ class View extends Observable implements IView {
 
     this.films = [];
     this.counter = 0;
-    this.filters = new Filters(this);
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
     this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
   }
@@ -131,6 +130,16 @@ class View extends Observable implements IView {
     this.pageNodesMap.filmListContainer.appendChild(fragment);
   }
 
+  private renderFilters(): void {
+    this.filters = new Filters(this);
+    this.pageNodesMap.filters.appendChild(this.filters.element);
+  }
+
+  private clearNodes(): void {
+    this.pageNodesMap.filmListContainer.innerHTML = '';
+    this.pageNodesMap.filters.innerHTML = '';
+  }
+
   @bind
   public updateFilmCard(id: string): void {
     const films = this.controller.getData();
@@ -152,11 +161,13 @@ class View extends Observable implements IView {
 
   @bind
   public render(): void {
-    this.pageNodesMap.filmListContainer.innerHTML = '';
+    this.clearNodes();
     this.renderFilms(5);
+    this.renderFilters();
   }
 
-  get viewFilms(): ViewFilm[] {
+  @bind
+  public getFilms(): ViewFilm[] {
     return this.films;
   }
 }
