@@ -15,6 +15,8 @@ class View extends Observable implements IView {
 
   private films: ViewFilm[];
 
+  private filteredFilms!: ViewFilm[];
+
   private counter: number;
 
   private filters!: Filters;
@@ -43,9 +45,10 @@ class View extends Observable implements IView {
   private showMoreHandler(): void {
     this.renderFilms(5);
 
-    if (this.counter >= this.films.length) {
+    if (this.counter >= this.filteredFilms.length) {
       this.counter = 0;
-      this.pageNodesMap.showMoreButton.remove();
+      const button = this.pageNodesMap.showMoreButton as HTMLElement;
+      button.style.display = 'none';
     }
   }
 
@@ -84,6 +87,16 @@ class View extends Observable implements IView {
     this.notify('controllUpdated', info);
   }
 
+  @bind
+  private renderFilteredFilms(films: ViewFilm[]): void {
+    const button = this.pageNodesMap.showMoreButton as HTMLElement;
+    button.style.display = 'block';
+    this.counter = 0;
+    this.pageNodesMap.filmListContainer.innerHTML = '';
+    this.filteredFilms = films;
+    this.renderFilms(5);
+  }
+
   private cacheCards() {
     const films = this.controller.getData();
 
@@ -109,20 +122,18 @@ class View extends Observable implements IView {
 
       this.films.push(viewFilm);
     });
+
+    this.filteredFilms = this.films;
   }
 
   private renderFilms(count: number): void {
-    if (this.films.length === 0) {
-      this.cacheCards();
-    }
-
     this.counter += count;
 
     const fragment = document.createDocumentFragment();
 
     for (let i = this.counter - count; i <= this.counter - 1; i += 1) {
-      if (this.films[i]) {
-        const { element } = this.films[i].film.card;
+      if (this.filteredFilms[i]) {
+        const { element } = this.filteredFilms[i].film.card;
         fragment.appendChild(element);
       }
     }
@@ -132,6 +143,7 @@ class View extends Observable implements IView {
 
   private renderFilters(): void {
     this.filters = new Filters(this);
+    this.filters.subscribe(this.renderFilteredFilms, 'filterClicked');
     this.pageNodesMap.filters.appendChild(this.filters.element);
   }
 
@@ -162,9 +174,12 @@ class View extends Observable implements IView {
 
   @bind
   public render(): void {
+    if (this.films.length === 0) {
+      this.cacheCards();
+    }
     this.clearNodes();
-    this.renderFilms(5);
     this.renderFilters();
+    this.renderFilms(5);
   }
 
   @bind
