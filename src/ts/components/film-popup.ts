@@ -5,10 +5,20 @@ import { constants } from '../utils/constants';
 import { Observable } from '../utils/observable';
 import * as Formatter from '../utils/formatter';
 
+type NodeMap = {
+  closeButton: Element,
+  controlls: Element,
+  itWatched: HTMLInputElement,
+  itFavorite: HTMLInputElement,
+  inWatchList: HTMLInputElement,
+};
+
 class FilmPopup extends Observable {
   private filmInfo: FilmInfo;
 
   private node!: HTMLElement;
+
+  private nodeMap!: NodeMap;
 
   constructor(filmInfo: FilmInfo) {
     super();
@@ -20,6 +30,33 @@ class FilmPopup extends Observable {
   @bind
   private closePopupHandler(): void {
     this.notify('closePopup', this.id);
+  }
+
+  @bind
+  private controllHandler(e: Event): void {
+    e.preventDefault();
+
+    const names = {
+      watchlist: 'inWatchList' as const,
+      favorite: 'itFavorite' as const,
+      watched: 'itWatched' as const,
+    };
+
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('film-details__control-label')) {
+      return;
+    }
+
+    const id = target.getAttribute('for') as 'watchlist' | 'favorite' | 'watched';
+    const input = this.nodeMap[names[id]];
+
+    const controllInfo = {
+      id: this.id,
+      name: names[id],
+      value: !input.checked,
+    };
+
+    this.notify('controllUpdated', controllInfo);
   }
 
   private createMarkup(): void {
@@ -181,14 +218,37 @@ class FilmPopup extends Observable {
 
     this.node.innerHTML = template;
 
-    this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.CLOSE_BUTTON}`)?.addEventListener('click', this.closePopupHandler);
+    if (!this.nodeMap) {
+      this.nodeMap = {
+        closeButton: this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.CLOSE_BUTTON}`)!,
+        controlls: this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.CONTROLLS}`)!,
+        inWatchList: this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.WATCHLIST}`) as HTMLInputElement,
+        itFavorite: this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.FAVORITE}`) as HTMLInputElement,
+        itWatched: this.node.querySelector(`.${constants.CLASSES.FILM_POPUP.WATCHED}`) as HTMLInputElement,
+      };
+    }
+
+    this.nodeMap.closeButton.addEventListener('click', this.closePopupHandler);
+    this.nodeMap.controlls.addEventListener('click', this.controllHandler);
+  }
+
+  private updateMarkup(): void {
+    const {
+      inWatchList,
+      itWatched,
+      itFavorite,
+    } = this.filmInfo;
+
+    this.nodeMap.inWatchList.checked = inWatchList;
+    this.nodeMap.itFavorite.checked = itFavorite;
+    this.nodeMap.itWatched.checked = itWatched;
   }
 
   public updateInfo(newFilmInfo: Partial<FilmInfo>): void {
     const oldFilmInfo = this.filmInfo;
 
     this.filmInfo = { ...oldFilmInfo, ...newFilmInfo };
-    this.createMarkup();
+    this.updateMarkup();
   }
 
   get element(): HTMLElement {

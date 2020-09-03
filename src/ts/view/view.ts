@@ -118,6 +118,8 @@ class View extends Observable implements IView {
 
       const filmPopup = new FilmPopup(film);
       filmPopup.subscribe(this.removePopup, 'closePopup');
+      filmPopup.subscribe(this.provideControllInfo, 'controllUpdated');
+
       const viewFilm = {
         film: {
           card: filmCard,
