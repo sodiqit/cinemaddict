@@ -178,6 +178,14 @@ class FilmCard extends Observable {
     return this.info.inWatchList;
   }
 
+  public get date(): number {
+    return new Date(this.info.releaseDate).getTime();
+  }
+
+  public get rating(): number {
+    return +this.info.rating;
+  }
+
   public updateInfo(newInfo: FilmCardInfo): void {
     const oldInfo = this.info;
     this.info = { ...oldInfo, ...newInfo };

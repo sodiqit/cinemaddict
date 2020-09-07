@@ -3,6 +3,7 @@ import { IView, PageNodesMap, ViewFilm } from './view-interface';
 import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
+import { Sort } from '../components/sort';
 import { Filters, FiltersType } from '../components/filters';
 import { Observable } from '../utils/observable';
 import { constants } from '../utils/constants';
@@ -20,6 +21,8 @@ class View extends Observable implements IView {
   private counter: number;
 
   private filters!: Filters;
+
+  private sort!: Sort;
 
   private activeFilter: FiltersType;
 
@@ -91,19 +94,24 @@ class View extends Observable implements IView {
   }
 
   @bind
-  private renderFilteredFilms(data: { films: ViewFilm[], activeFilter: FiltersType }): void {
+  private renderFilteredFilms(data: { films: ViewFilm[], activeFilter?: FiltersType, isFilterClick: boolean }): void {
     const {
       films,
       activeFilter,
+      isFilterClick,
     } = data;
 
-    this.activeFilter = activeFilter;
+    this.filteredFilms = films;
+
+    if (isFilterClick && activeFilter) {
+      this.activeFilter = activeFilter;
+      this.sort.switchActiveSort('default');
+    }
 
     const button = this.pageNodesMap.showMoreButton as HTMLElement;
     button.style.display = 'block';
     this.counter = 0;
     this.pageNodesMap.filmListContainer.innerHTML = '';
-    this.filteredFilms = films;
     this.renderFilms(5);
   }
 
@@ -157,6 +165,11 @@ class View extends Observable implements IView {
     this.pageNodesMap.filters.appendChild(this.filters.element);
   }
 
+  private createSort(): void {
+    this.sort = new Sort(this);
+    this.sort.subscribe(this.renderFilteredFilms, 'sortClicked');
+  }
+
   private clearNodes(): void {
     this.pageNodesMap.filmListContainer.innerHTML = '';
     this.pageNodesMap.filters.innerHTML = '';
@@ -174,7 +187,7 @@ class View extends Observable implements IView {
     if (needFilm && needFilmCard) {
       needFilmCard.updateInfo(formattedFilm);
       needFilmPopup.updateInfo(needFilm);
-      this.filters.update();
+      this.filters.update(this.activeFilter);
 
       const filterName = nameSpace[this.activeFilter];
       if (filterName !== 'all' && !needFilmCard[filterName]) {
@@ -196,12 +209,23 @@ class View extends Observable implements IView {
     }
     this.clearNodes();
     this.renderFilters();
+    this.createSort();
     this.renderFilms(5);
   }
 
   @bind
   public getFilms(): ViewFilm[] {
     return this.films;
+  }
+
+  @bind
+  public getFilteredFilms(): ViewFilm[] {
+    return this.filteredFilms;
+  }
+
+  @bind
+  public setFilteredFilms(films: ViewFilm[]): void {
+    this.filteredFilms = films;
   }
 }
 

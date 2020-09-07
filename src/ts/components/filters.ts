@@ -6,7 +6,7 @@ import { Observable } from '../utils/observable';
 
 type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
-type NodeMap = {
+type FiltersNodeMap = {
   all: {
     item: Element,
     counter: Element
@@ -30,7 +30,7 @@ class Filters extends Observable {
 
   private node!: DocumentFragment;
 
-  private nodeMap!: NodeMap;
+  private nodeMap!: FiltersNodeMap;
 
   constructor(view: IView) {
     super();
@@ -53,6 +53,7 @@ class Filters extends Observable {
     this.notify('filterClicked', {
       films: filteredFilms,
       activeFilter: filterType,
+      isFilterClick: true,
     });
   }
 
@@ -139,7 +140,7 @@ class Filters extends Observable {
     return this.node;
   }
 
-  public update(): void {
+  public update(filterType: FiltersType): void {
     Object.keys(this.nodeMap).forEach((key) => {
       const keyName = key as FiltersType;
       if (key === 'all') {
@@ -147,6 +148,8 @@ class Filters extends Observable {
       }
       this.nodeMap[keyName].counter.textContent = this.filterFilms(keyName).length.toString();
     });
+
+    this.view.setFilteredFilms(this.filterFilms(filterType));
   }
 }
 

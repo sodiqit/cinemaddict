@@ -10,6 +10,7 @@ export const constants = {
       FILMS_EXTRA: 'films-list--extra',
       SHOW_BUTTON: 'films-list__show-more',
       SORT: 'sort',
+      SORT_BUTTON: 'sort__button',
       SORT_ACTIVE: 'sort__button--active',
       STATS: 'main-navigation__additional',
       FILTERS: 'main-navigation',

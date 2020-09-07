@@ -7,6 +7,8 @@ interface IView extends IObservable {
   render(): void,
   renderError(): void,
   getFilms(): ViewFilm[],
+  getFilteredFilms(): ViewFilm[],
+  setFilteredFilms(films: ViewFilm[]): void,
 }
 
 type PageNodesMap = {
