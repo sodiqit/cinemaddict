@@ -1,4 +1,4 @@
-import { FilmInfo, IModel } from '../model/model-interface';
+import { FilmInfo, IModel, FiltersType } from '../model/model-interface';
 import { Model } from '../model/model';
 import { View } from '../view/view';
 import { IView } from '../view/view-interface';
@@ -18,9 +18,16 @@ export class PageController implements IController {
 
     this.view.subscribe(this.model.updateFilm, 'controllUpdated');
     this.model.subscribe(this.view.updateFilmCard, 'filmUpdated');
+
+    this.view.subscribe(this.model.filterFilms, 'filterClicked');
+    this.model.subscribe(this.view.renderFilteredFilms, 'filmsFiltered');
   }
 
   getData(): FilmInfo[] {
     return this.model.getData();
+  }
+
+  getFilterCount(filterType: FiltersType): number {
+    return this.model.getFilterCount(filterType);
   }
 }

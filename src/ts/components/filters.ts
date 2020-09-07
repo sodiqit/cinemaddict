@@ -1,10 +1,9 @@
 import { bind } from 'bind-decorator';
-import { IView, ViewFilm } from '../view/view-interface';
+import { IView } from '../view/view-interface';
+import { FiltersType } from '../model/model-interface';
 import { createNode } from '../utils/create-node';
 import { constants } from '../utils/constants';
 import { Observable } from '../utils/observable';
-
-type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
 type FiltersNodeMap = {
   all: {
@@ -46,15 +45,10 @@ class Filters extends Observable {
       return;
     }
     const filterType = target.dataset.type as FiltersType;
-    const filteredFilms = this.filterFilms(filterType);
 
     this.switchActiveFilter(filterType);
 
-    this.notify('filterClicked', {
-      films: filteredFilms,
-      activeFilter: filterType,
-      isFilterClick: true,
-    });
+    this.notify('filterClicked', filterType);
   }
 
   private switchActiveFilter(filterName: FiltersType): void {
@@ -70,30 +64,14 @@ class Filters extends Observable {
     });
   }
 
-  private filterFilms(filterType: FiltersType): ViewFilm[] {
-    const names = {
-      watchlist: 'inWatchList' as const,
-      history: 'itWatched' as const,
-      favorite: 'itFavorite' as const,
-    };
-
-    const films = this.view.getFilms();
-
-    if (filterType === 'all') {
-      return films;
-    }
-
-    return films.filter((viewFilm) => viewFilm.film.card[names[filterType]]);
-  }
-
   private createMarkup(): void {
     const fragment = document.createDocumentFragment();
 
     const template = `
       <a href="#all" data-type="all" class="main-navigation__item main-navigation__item--active">All movies</a>
-      <a href="#watchlist" data-type="watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${this.filterFilms('watchlist').length}</span></a>
-      <a href="#history" data-type="history" class="main-navigation__item">History <span class="main-navigation__item-count">${this.filterFilms('history').length}</span></a>
-      <a href="#favorites" data-type="favorite" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${this.filterFilms('favorite').length}</span></a>
+      <a href="#watchlist" data-type="watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${this.view.getFiltersCount('watchlist')}</span></a>
+      <a href="#history" data-type="history" class="main-navigation__item">History <span class="main-navigation__item-count">${this.view.getFiltersCount('history')}</span></a>
+      <a href="#favorites" data-type="favorite" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${this.view.getFiltersCount('favorite')}</span></a>
     `;
 
     const node = createNode('div', {
@@ -140,20 +118,15 @@ class Filters extends Observable {
     return this.node;
   }
 
-  public update(filterType: FiltersType): void {
+  public update(): void {
     Object.keys(this.nodeMap).forEach((key) => {
       const keyName = key as FiltersType;
       if (key === 'all') {
         return;
       }
-      this.nodeMap[keyName].counter.textContent = this.filterFilms(keyName).length.toString();
+      this.nodeMap[keyName].counter.textContent = this.view.getFiltersCount(keyName).toString();
     });
-
-    this.view.setFilteredFilms(this.filterFilms(filterType));
   }
 }
 
-export {
-  Filters,
-  FiltersType,
-};
+export { Filters };

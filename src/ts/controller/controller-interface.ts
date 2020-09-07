@@ -1,5 +1,6 @@
-import { FilmInfo } from '../model/model-interface';
+import { FilmInfo, FiltersType } from '../model/model-interface';
 
 export interface IController {
-  getData(): FilmInfo[]
+  getData(): FilmInfo[],
+  getFilterCount(filterType: FiltersType): number,
 }

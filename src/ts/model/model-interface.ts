@@ -29,13 +29,18 @@ type FilmInfo = {
   comments: Comment[],
 };
 
+type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
+
 interface IModel extends IObservable {
   getData(): FilmInfo[],
+  getFilterCount(filterType: FiltersType): number,
   updateFilm(info: { id: string, name: string, value: boolean }): void,
+  filterFilms(filterType: FiltersType): void,
 }
 
 export {
   Comment,
   FilmInfo,
+  FiltersType,
   IModel,
 };

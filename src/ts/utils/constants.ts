@@ -38,9 +38,9 @@ export const constants = {
     ACTIVE_CLASS: 'film-card__controls-item--active',
   },
   FILTERS_TYPE: {
-    all: 'all',
-    watchlist: 'inWatchList',
-    history: 'itWatched',
-    favorite: 'itFavorite',
+    all: 'all' as const,
+    watchlist: 'inWatchList' as const,
+    history: 'itWatched' as const,
+    favorite: 'itFavorite' as const,
   },
 };
