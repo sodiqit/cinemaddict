@@ -25,7 +25,7 @@ type NodeMap = {
   },
 };
 
-export class Filters extends Observable {
+class Filters extends Observable {
   private view: IView;
 
   private node!: DocumentFragment;
@@ -48,7 +48,10 @@ export class Filters extends Observable {
     const filterType = target.dataset.type as FiltersType;
     const filteredFilms = this.filterFilms(filterType);
 
-    this.notify('filterClicked', filteredFilms);
+    this.notify('filterClicked', {
+      films: filteredFilms,
+      activeFilter: filterType,
+    });
   }
 
   private filterFilms(filterType: FiltersType): ViewFilm[] {
@@ -131,3 +134,8 @@ export class Filters extends Observable {
     });
   }
 }
+
+export {
+  Filters,
+  FiltersType,
+};

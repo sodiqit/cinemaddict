@@ -3,7 +3,7 @@ import { IView, PageNodesMap, ViewFilm } from './view-interface';
 import { IController } from '../controller/controller-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
-import { Filters } from '../components/filters';
+import { Filters, FiltersType } from '../components/filters';
 import { Observable } from '../utils/observable';
 import { constants } from '../utils/constants';
 import * as Formatter from '../utils/formatter';
@@ -21,6 +21,8 @@ class View extends Observable implements IView {
 
   private filters!: Filters;
 
+  private activeFilter: FiltersType;
+
   constructor(controller: IController) {
     super();
     this.controller = controller;
@@ -37,6 +39,7 @@ class View extends Observable implements IView {
 
     this.films = [];
     this.counter = 0;
+    this.activeFilter = 'all';
     this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
     this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
   }
@@ -88,7 +91,14 @@ class View extends Observable implements IView {
   }
 
   @bind
-  private renderFilteredFilms(films: ViewFilm[]): void {
+  private renderFilteredFilms(data: { films: ViewFilm[], activeFilter: FiltersType }): void {
+    const {
+      films,
+      activeFilter,
+    } = data;
+
+    this.activeFilter = activeFilter;
+
     const button = this.pageNodesMap.showMoreButton as HTMLElement;
     button.style.display = 'block';
     this.counter = 0;
@@ -154,6 +164,7 @@ class View extends Observable implements IView {
 
   @bind
   public updateFilmCard(id: string): void {
+    const nameSpace = constants.FILTERS_TYPE;
     const films = this.controller.getData();
     const needFilm = films.filter((film) => film.id === id)[0];
     const formattedFilm = Formatter.formatDataForFilmCard(needFilm);
@@ -164,6 +175,12 @@ class View extends Observable implements IView {
       needFilmCard.updateInfo(formattedFilm);
       needFilmPopup.updateInfo(needFilm);
       this.filters.update();
+
+      const filterName = nameSpace[this.activeFilter];
+      if (filterName !== 'all' && !needFilmCard[filterName]) {
+        needFilmCard.element.remove();
+        this.renderFilms(1);
+      }
     }
   }
 
