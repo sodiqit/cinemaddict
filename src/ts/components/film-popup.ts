@@ -28,8 +28,12 @@ class FilmPopup extends Observable {
   }
 
   @bind
-  private closePopupHandler(): void {
-    this.notify('closePopup', this.id);
+  private closePopupHandler(e: KeyboardEvent | Event): void {
+    e.preventDefault();
+    if ((e instanceof KeyboardEvent && e.key === 'Escape') || !(e instanceof KeyboardEvent)) {
+      this.notify('closePopup', this.id);
+      document.removeEventListener('keydown', this.closePopupHandler);
+    }
   }
 
   @bind
@@ -252,6 +256,7 @@ class FilmPopup extends Observable {
   }
 
   get element(): HTMLElement {
+    document.addEventListener('keydown', this.closePopupHandler);
     return this.node;
   }
 
