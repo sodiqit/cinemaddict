@@ -48,9 +48,24 @@ class Filters extends Observable {
     const filterType = target.dataset.type as FiltersType;
     const filteredFilms = this.filterFilms(filterType);
 
+    this.switchActiveFilter(filterType);
+
     this.notify('filterClicked', {
       films: filteredFilms,
       activeFilter: filterType,
+    });
+  }
+
+  private switchActiveFilter(filterName: FiltersType): void {
+    Object.keys(this.nodeMap).forEach((key) => {
+      const keyName = key as FiltersType;
+      const { item } = this.nodeMap[keyName];
+
+      if (keyName === filterName) {
+        item.classList.add(constants.CLASSES.FILTERS.ACTIVE);
+      } else {
+        item.classList.remove(constants.CLASSES.FILTERS.ACTIVE);
+      }
     });
   }
 
