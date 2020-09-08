@@ -162,6 +162,7 @@ class View extends Observable implements IView {
 
   @bind
   public updateFilmCard(id: string): void {
+    const filtersNameSpace = constants.FILTERS_TYPE;
     const films = this.controller.getData();
     const needFilm = films.filter((film) => film.id === id)[0];
     const formattedFilm = Formatter.formatDataForFilmCard(needFilm);
@@ -172,6 +173,11 @@ class View extends Observable implements IView {
       needFilmCard.updateInfo(formattedFilm);
       needFilmPopup.updateInfo(needFilm);
       this.filters.update();
+
+      if (needFilmCard[filtersNameSpace[this.filters.activeFilterType]] === false) {
+        needFilmCard.element.remove();
+        this.renderFilms(1);
+      }
     }
   }
 

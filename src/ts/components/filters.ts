@@ -24,16 +24,19 @@ type FiltersNodeMap = {
   },
 };
 
-class Filters extends Observable {
+export class Filters extends Observable {
   private view: IView;
 
   private node!: DocumentFragment;
 
   private nodeMap!: FiltersNodeMap;
 
+  private activeFilter: FiltersType;
+
   constructor(view: IView) {
     super();
     this.view = view;
+    this.activeFilter = 'all';
     this.createMarkup();
   }
 
@@ -52,6 +55,7 @@ class Filters extends Observable {
   }
 
   private switchActiveFilter(filterName: FiltersType): void {
+    this.activeFilter = filterName;
     Object.keys(this.nodeMap).forEach((key) => {
       const keyName = key as FiltersType;
       const { item } = this.nodeMap[keyName];
@@ -118,6 +122,10 @@ class Filters extends Observable {
     return this.node;
   }
 
+  public get activeFilterType(): FiltersType {
+    return this.activeFilter;
+  }
+
   public update(): void {
     Object.keys(this.nodeMap).forEach((key) => {
       const keyName = key as FiltersType;
@@ -128,5 +136,3 @@ class Filters extends Observable {
     });
   }
 }
-
-export { Filters };
