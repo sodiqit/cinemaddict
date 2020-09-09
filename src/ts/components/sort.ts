@@ -1,5 +1,6 @@
 import { bind } from 'bind-decorator';
-import { IView, ViewFilm } from '../view/view-interface';
+import { IView } from '../view/view-interface';
+import { SortType } from '../model/model-interface';
 import { Observable } from '../utils/observable';
 import { constants } from '../utils/constants';
 
@@ -9,16 +10,17 @@ type SortNodeMap = {
   rating: Element,
 };
 
-type SortType = 'default' | 'date' | 'rating';
-
-export class Sort extends Observable {
+class Sort extends Observable {
   private view: IView;
 
   private nodeMap!: SortNodeMap;
 
+  private activeSortType: SortType;
+
   constructor(view: IView) {
     super();
     this.view = view;
+    this.activeSortType = 'default';
     this.cacheNodeMap();
     document.querySelector(`.${constants.CLASSES.MAIN_PAGE.SORT}`)?.addEventListener('click', this.sortButtonHandler);
   }
@@ -32,16 +34,6 @@ export class Sort extends Observable {
     };
   }
 
-  private sortFilms(sortType: SortType): ViewFilm[] {
-    const type = sortType === 'date' ? 'date' : 'rating';
-    const films = this.view.getFilteredFilms();
-    if (sortType === 'default') {
-      return films.sort(() => Math.random() - 0.5);
-    }
-
-    return films.sort((a, b) => b.film.card[type] - a.film.card[type]);
-  }
-
   @bind
   private sortButtonHandler(e: Event): void {
     e.preventDefault();
@@ -53,17 +45,13 @@ export class Sort extends Observable {
 
     const sortType = target.dataset.type as SortType;
 
-    const sortedFilms = this.sortFilms(sortType);
-
     this.switchActiveSort(sortType);
 
-    this.notify('sortClicked', {
-      films: sortedFilms,
-      isFilterClick: false,
-    });
+    this.notify('sortClicked', sortType);
   }
 
-  public switchActiveSort(sortType: SortType): void {
+  private switchActiveSort(sortType: SortType): void {
+    this.activeSortType = sortType;
     Object.keys(this.nodeMap).forEach((key) => {
       const keyName = key as SortType;
       const item = this.nodeMap[keyName];
@@ -75,4 +63,14 @@ export class Sort extends Observable {
       }
     });
   }
+
+  @bind
+  public resetSort(): void {
+    this.switchActiveSort('default');
+  }
 }
+
+export {
+  Sort,
+  SortType,
+};

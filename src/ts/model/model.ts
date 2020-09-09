@@ -1,16 +1,26 @@
 import { bind } from 'bind-decorator';
-import { IModel, FilmInfo, FiltersType } from './model-interface';
+import {
+  IModel,
+  FilmInfo,
+  FiltersType,
+  SortType,
+} from './model-interface';
 import { Observable } from '../utils/observable';
 import { getFilmData } from '../utils/mock/mock-film-data';
 
 export class Model extends Observable implements IModel {
   private films!: FilmInfo[];
 
-  private filteredFilms!: string[];
+  private filteredFilms!: FilmInfo[];
+
+  private activeFilter!: FiltersType;
 
   constructor() {
     super();
-    this.fetchData().then(() => this.notify('dataLoaded')).catch(() => this.notify('errorLoaded'));
+    this.fetchData().then(() => {
+      this.filterFilms('all');
+      this.notify('dataLoaded');
+    }).catch(() => this.notify('errorLoaded'));
   }
 
   private fetchData(): Promise<FilmInfo[] | void> {
@@ -28,7 +38,7 @@ export class Model extends Observable implements IModel {
   }
 
   @bind
-  public filterFilms(filterType: FiltersType, needUpdate = true): string[] {
+  public filterFilms(filterType: FiltersType, needUpdate = true): FilmInfo[] {
     const names = {
       watchlist: 'inWatchList' as const,
       history: 'itWatched' as const,
@@ -36,20 +46,48 @@ export class Model extends Observable implements IModel {
       all: '' as const,
     };
 
-    let filmsId = [];
+    let filteredFilms = [];
 
     if (filterType === 'all') {
-      filmsId = this.films.map((film) => film.id);
+      filteredFilms = this.films;
     } else {
-      filmsId = this.films.filter((film) => film[names[filterType]]).map((film) => film.id);
+      filteredFilms = this.films.filter((film) => film[names[filterType]]);
     }
 
     if (needUpdate) {
-      this.filteredFilms = filmsId;
-      this.notify('filmsFiltered', filmsId);
+      this.activeFilter = filterType;
+      this.filteredFilms = filteredFilms;
+      this.notify('filmsFiltered', filteredFilms.map((film) => film.id));
     }
 
-    return filmsId;
+    return filteredFilms;
+  }
+
+  @bind
+  public sortFilms(sortType: SortType, needNotify = true): FilmInfo[] {
+    const type = sortType === 'date' ? 'releaseDate' : 'rating';
+
+    let sortedFilms = [];
+
+    if (sortType === 'default') {
+      sortedFilms = this.filteredFilms;
+    } else {
+      sortedFilms = this.filteredFilms.slice().sort((a, b) => {
+        if (type === 'releaseDate') {
+          const rightDate = new Date(b[type]).getTime();
+          const leftDate = new Date(a[type]).getTime();
+          return rightDate - leftDate;
+        }
+
+        return +b[type] - (+a[type]);
+      });
+    }
+
+    if (needNotify) {
+      this.notify('filmsSorted', sortedFilms.map((film) => film.id));
+    }
+
+    return sortedFilms;
   }
 
   @bind
@@ -63,6 +101,7 @@ export class Model extends Observable implements IModel {
 
     if (needFilm) {
       needFilm[name] = value;
+      this.filteredFilms = this.filterFilms(this.activeFilter, false);
       this.notify('filmUpdated', id);
     }
   }

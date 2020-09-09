@@ -21,6 +21,9 @@ export class PageController implements IController {
 
     this.view.subscribe(this.model.filterFilms, 'filterClicked');
     this.model.subscribe(this.view.renderFilteredFilms, 'filmsFiltered');
+
+    this.view.subscribe(this.model.sortFilms, 'sortClicked');
+    this.model.subscribe(this.view.renderFilteredFilms, 'filmsSorted');
   }
 
   getData(): FilmInfo[] {

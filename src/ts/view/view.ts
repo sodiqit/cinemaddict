@@ -1,7 +1,7 @@
 import { bind } from 'bind-decorator';
 import { IView, PageNodesMap, ViewFilm } from './view-interface';
 import { IController } from '../controller/controller-interface';
-import { FiltersType } from '../model/model-interface';
+import { FiltersType, SortType } from '../model/model-interface';
 import { FilmCard } from '../components/film-card/film-card';
 import { FilmPopup } from '../components/film-popup';
 import { Sort } from '../components/sort';
@@ -96,6 +96,11 @@ class View extends Observable implements IView {
     this.notify('filterClicked', filterType);
   }
 
+  @bind
+  private provideSortType(sortType: SortType): void {
+    this.notify('sortClicked', sortType);
+  }
+
   private cacheCards() {
     const films = this.controller.getData();
 
@@ -143,12 +148,13 @@ class View extends Observable implements IView {
   private renderFilters(): void {
     this.filters = new Filters(this);
     this.filters.subscribe(this.provideFilterType, 'filterClicked');
+    this.filters.subscribe(this.sort.resetSort, 'filterClicked');
     this.pageNodesMap.filters.appendChild(this.filters.element);
   }
 
   private createSort(): void {
     this.sort = new Sort(this);
-    this.sort.subscribe(this.renderFilteredFilms, 'sortClicked');
+    this.sort.subscribe(this.provideSortType, 'sortClicked');
   }
 
   private clearNodes(): void {
@@ -188,12 +194,14 @@ class View extends Observable implements IView {
 
   @bind
   public renderFilteredFilms(filmsId: string[]): void {
-    const needFilms = this.films.filter((viewFilm) => {
+    const needFilms = [] as ViewFilm[];
+
+    this.films.forEach((viewFilm) => {
       if (filmsId.includes(viewFilm.id)) {
-        return viewFilm;
+        needFilms[filmsId.indexOf(viewFilm.id)] = viewFilm;
       }
-      return false;
     });
+
     this.filteredFilms = needFilms;
     const button = this.pageNodesMap.showMoreButton as HTMLElement;
     button.style.display = 'block';
@@ -208,8 +216,8 @@ class View extends Observable implements IView {
       this.cacheCards();
     }
     this.clearNodes();
-    this.renderFilters();
     this.createSort();
+    this.renderFilters();
     this.renderFilms(5);
   }
 

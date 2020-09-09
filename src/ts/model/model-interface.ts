@@ -1,5 +1,7 @@
 import { IObservable } from '../utils/observable';
 
+type SortType = 'default' | 'date' | 'rating';
+
 type Comment = {
   author: string,
   date: string,
@@ -35,12 +37,14 @@ interface IModel extends IObservable {
   getData(): FilmInfo[],
   getFilterCount(filterType: FiltersType): number,
   updateFilm(info: { id: string, name: string, value: boolean }): void,
-  filterFilms(filterType: FiltersType): void,
+  filterFilms(filterType: FiltersType, needUpdate: boolean): FilmInfo[],
+  sortFilms(sortType: SortType): FilmInfo[],
 }
 
 export {
   Comment,
   FilmInfo,
   FiltersType,
+  SortType,
   IModel,
 };
