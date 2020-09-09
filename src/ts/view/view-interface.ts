@@ -5,6 +5,7 @@ import { FiltersType } from '../model/model-interface';
 
 interface IView extends IObservable {
   updateFilmCard(id: string): void,
+  updateProfile(profileName: string): void,
   render(): void,
   renderFilteredFilms(films: string[]): void,
   renderError(): void,
@@ -21,6 +22,7 @@ type PageNodesMap = {
   filters: Element,
   navigationContainer: Element,
   profileRating: Element,
+  filmsQuantity: Element,
 };
 
 type ViewFilm = {

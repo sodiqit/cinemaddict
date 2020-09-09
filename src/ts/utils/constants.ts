@@ -17,6 +17,7 @@ export const constants = {
       FILTERS_CONTAINER: 'main-navigation__items',
       NAVIGATION_CONTAINER: 'main-navigation',
       PROFILE_RATING: 'profile__rating',
+      FILMS_QUANTITY: 'footer__statistics',
     },
     FILM_POPUP: {
       TITLE: 'film-details__title',
@@ -42,5 +43,10 @@ export const constants = {
     watchlist: 'inWatchList' as const,
     history: 'itWatched' as const,
     favorite: 'itFavorite' as const,
+  },
+  PROFILE_STATUS: {
+    NOVICE: 'Novice',
+    FAN: 'Fan',
+    MOVIE_BUFF: 'Movie Buff',
   },
 };

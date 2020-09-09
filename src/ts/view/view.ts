@@ -30,18 +30,19 @@ class View extends Observable implements IView {
     this.controller = controller;
     this.pageNodesMap = {
       filmListContainer: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILMS_CONTAINER}`)!,
-      mostCommentedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA} .${constants.CLASSES.MAIN_PAGE.FILMS_CONTAINER}`)[1]!,
-      topRatedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA} .${constants.CLASSES.MAIN_PAGE.FILMS_CONTAINER}`)[0]!,
+      mostCommentedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA}`)[1]!,
+      topRatedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA}`)[0]!,
       showMoreButton: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.SHOW_BUTTON}`)!,
       sort: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.SORT}`)!,
       filters: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILTERS}`)!,
       navigationContainer: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.NAVIGATION_CONTAINER}`)!,
       profileRating: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.PROFILE_RATING}`)!,
+      filmsQuantity: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILMS_QUANTITY} p`)!,
     };
 
     this.films = [];
     this.counter = 0;
-    this.pageNodesMap.filmListContainer.innerHTML = 'Loading...';
+    this.pageNodesMap.filmListContainer.innerHTML = '<h2 class="films-list__title">Loading...</h2>';
     this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
   }
 
@@ -167,6 +168,11 @@ class View extends Observable implements IView {
   }
 
   @bind
+  public updateProfile(profileName: string): void {
+    this.pageNodesMap.profileRating.textContent = profileName;
+  }
+
+  @bind
   public updateFilmCard(id: string): void {
     const filtersNameSpace = constants.FILTERS_TYPE;
     const films = this.controller.getData();
@@ -189,7 +195,7 @@ class View extends Observable implements IView {
 
   @bind
   public renderError(): void {
-    this.pageNodesMap.filmListContainer.innerHTML = 'There are no movies in our database.';
+    this.pageNodesMap.filmListContainer.innerHTML = '<h2 class="films-list__title">There are no movies in our database.</h2>';
   }
 
   @bind
@@ -219,6 +225,7 @@ class View extends Observable implements IView {
     this.createSort();
     this.renderFilters();
     this.renderFilms(5);
+    this.pageNodesMap.filmsQuantity.textContent = `${this.films.length} movies inside`;
   }
 
   @bind

@@ -7,6 +7,7 @@ import {
 } from './model-interface';
 import { Observable } from '../utils/observable';
 import { getFilmData } from '../utils/mock/mock-film-data';
+import { constants } from '../utils/constants';
 
 export class Model extends Observable implements IModel {
   private films!: FilmInfo[];
@@ -19,6 +20,7 @@ export class Model extends Observable implements IModel {
     super();
     this.fetchData().then(() => {
       this.filterFilms('all');
+      this.checkProfile();
       this.notify('dataLoaded');
     }).catch(() => this.notify('errorLoaded'));
   }
@@ -27,6 +29,25 @@ export class Model extends Observable implements IModel {
     return getFilmData(15).then((films) => {
       this.films = films;
     });
+  }
+
+  private checkProfile(): void {
+    const watchedFilms = this.filterFilms('history', false).length;
+    let status = '';
+
+    if (watchedFilms > 0 && watchedFilms <= 10) {
+      status = constants.PROFILE_STATUS.NOVICE;
+    }
+
+    if (watchedFilms > 10 && watchedFilms <= 20) {
+      status = constants.PROFILE_STATUS.FAN;
+    }
+
+    if (watchedFilms > 20) {
+      status = constants.PROFILE_STATUS.MOVIE_BUFF;
+    }
+
+    this.notify('profileUpdated', status);
   }
 
   public getData(): FilmInfo[] {
@@ -103,6 +124,7 @@ export class Model extends Observable implements IModel {
       needFilm[name] = value;
       this.filteredFilms = this.filterFilms(this.activeFilter, false);
       this.notify('filmUpdated', id);
+      this.checkProfile();
     }
   }
 }
