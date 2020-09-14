@@ -15,8 +15,16 @@ interface IView extends IObservable {
 
 type PageNodesMap = {
   filmListContainer: Element,
-  mostCommentedContainer: Element,
-  topRatedContainer: Element,
+  mostCommented: {
+    mainNode: Element,
+    title: Element,
+    container: Element,
+  },
+  topRated: {
+    mainNode: Element,
+    title: Element,
+    container: Element,
+  },
   showMoreButton: Element,
   sort: Element,
   filters: Element,

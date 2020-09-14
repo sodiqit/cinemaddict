@@ -19,7 +19,8 @@ export class Model extends Observable implements IModel {
   constructor() {
     super();
     this.fetchData().then(() => {
-      this.filterFilms('all');
+      this.activeFilter = 'all';
+      this.filteredFilms = this.films;
       this.checkProfile();
       this.notify('dataLoaded');
     }).catch(() => this.notify('errorLoaded'));
@@ -50,14 +51,6 @@ export class Model extends Observable implements IModel {
     this.notify('profileUpdated', status);
   }
 
-  public getData(): FilmInfo[] {
-    return this.films;
-  }
-
-  public getFilterCount(filterType: FiltersType): number {
-    return this.filterFilms(filterType, false).length;
-  }
-
   @bind
   public filterFilms(filterType: FiltersType, needUpdate = true): FilmInfo[] {
     const names = {
@@ -85,8 +78,20 @@ export class Model extends Observable implements IModel {
   }
 
   @bind
-  public sortFilms(sortType: SortType, needNotify = true): FilmInfo[] {
-    const type = sortType === 'date' ? 'releaseDate' : 'rating';
+  public sortFilms(sortType: SortType | 'comments', needNotify = true): FilmInfo[] {
+    let type: 'releaseDate' | 'rating' | 'comments';
+
+    switch (sortType) {
+      case 'date':
+        type = 'releaseDate';
+        break;
+      case 'rating':
+        type = 'rating';
+        break;
+      default:
+        type = 'comments';
+        break;
+    }
 
     let sortedFilms = [];
 
@@ -100,7 +105,11 @@ export class Model extends Observable implements IModel {
           return rightDate - leftDate;
         }
 
-        return +b[type] - (+a[type]);
+        if (type === 'rating') {
+          return +b[type] - (+a[type]);
+        }
+
+        return b[type].length - a[type].length;
       });
     }
 
@@ -126,5 +135,17 @@ export class Model extends Observable implements IModel {
       this.notify('filmUpdated', id);
       this.checkProfile();
     }
+  }
+
+  public getData(): FilmInfo[] {
+    return this.films;
+  }
+
+  public getFilterFilms(filterType: FiltersType): FilmInfo[] {
+    return this.filterFilms(filterType, false);
+  }
+
+  public getSortedFilms(sortType: SortType | 'comments'): FilmInfo[] {
+    return this.sortFilms(sortType, false);
   }
 }

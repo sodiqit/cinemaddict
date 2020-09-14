@@ -35,10 +35,11 @@ type FiltersType = 'watchlist' | 'history' | 'favorite' | 'all';
 
 interface IModel extends IObservable {
   getData(): FilmInfo[],
-  getFilterCount(filterType: FiltersType): number,
+  getFilterFilms(filterType: FiltersType): FilmInfo[],
+  getSortedFilms(filterType: SortType | 'comments'): FilmInfo[],
   updateFilm(info: { id: string, name: string, value: boolean }): void,
   filterFilms(filterType: FiltersType, needUpdate: boolean): FilmInfo[],
-  sortFilms(sortType: SortType): FilmInfo[],
+  sortFilms(sortType: SortType | 'comments'): FilmInfo[],
 }
 
 export {

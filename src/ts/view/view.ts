@@ -13,7 +13,7 @@ import * as Formatter from '../utils/formatter';
 class View extends Observable implements IView {
   private controller: IController;
 
-  private pageNodesMap: PageNodesMap;
+  private pageNodesMap!: PageNodesMap;
 
   private films: ViewFilm[];
 
@@ -28,10 +28,34 @@ class View extends Observable implements IView {
   constructor(controller: IController) {
     super();
     this.controller = controller;
+    this.cacheNodeMap();
+    this.films = [];
+    this.counter = 0;
+    this.init();
+  }
+
+  private init(): void {
+    this.pageNodesMap.filmListContainer.innerHTML = '<h2 class="films-list__title">Loading...</h2>';
+    this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
+  }
+
+  private cacheNodeMap(): void {
+    const [topRatedContainer, mostCommentedContainer] = Array.from(document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA} .${constants.CLASSES.MAIN_PAGE.FILMS_CONTAINER}`))!;
+    const [topRatedTitle, mostCommentedTitle] = Array.from(document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA} .${constants.CLASSES.MAIN_PAGE.FILMS_TITLE}`))!;
+    const [topRated, mostCommented] = Array.from(document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA}`))!;
+
     this.pageNodesMap = {
       filmListContainer: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILMS_CONTAINER}`)!,
-      mostCommentedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA}`)[1]!,
-      topRatedContainer: document.querySelectorAll(`.${constants.CLASSES.MAIN_PAGE.FILMS_EXTRA}`)[0]!,
+      mostCommented: {
+        mainNode: mostCommented,
+        title: mostCommentedTitle,
+        container: mostCommentedContainer,
+      },
+      topRated: {
+        mainNode: topRated,
+        title: topRatedTitle,
+        container: topRatedContainer,
+      },
       showMoreButton: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.SHOW_BUTTON}`)!,
       sort: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.SORT}`)!,
       filters: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILTERS}`)!,
@@ -39,11 +63,6 @@ class View extends Observable implements IView {
       profileRating: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.PROFILE_RATING}`)!,
       filmsQuantity: document.querySelector(`.${constants.CLASSES.MAIN_PAGE.FILMS_QUANTITY} p`)!,
     };
-
-    this.films = [];
-    this.counter = 0;
-    this.pageNodesMap.filmListContainer.innerHTML = '<h2 class="films-list__title">Loading...</h2>';
-    this.pageNodesMap.showMoreButton.addEventListener('click', this.showMoreHandler);
   }
 
   @bind
@@ -153,6 +172,35 @@ class View extends Observable implements IView {
     this.pageNodesMap.filters.appendChild(this.filters.element);
   }
 
+  private renderExtraFilms(extraType: 'rated' | 'commented'): void {
+    const sortNames = {
+      rated: 'rating' as const,
+      commented: 'comments' as const,
+    };
+    const { container } = this.pageNodesMap[(extraType === 'rated' ? 'topRated' : 'mostCommented')];
+    container.innerHTML = '';
+    const [firstFilm, secondFilm] = this.controller.getSortedFilms(sortNames[extraType]);
+    const sortedFilms = [] as ViewFilm[];
+
+    this.films.forEach((viewFilm) => {
+      if (viewFilm.id === firstFilm.id) {
+        sortedFilms[0] = viewFilm;
+      }
+      if (viewFilm.id === secondFilm.id) {
+        sortedFilms[1] = viewFilm;
+      }
+    });
+
+    const fragment = document.createDocumentFragment();
+
+    sortedFilms.forEach((viewFilm) => {
+      const { element } = viewFilm.film.card;
+      fragment.appendChild(element);
+    });
+
+    container.appendChild(fragment);
+  }
+
   private createSort(): void {
     this.sort = new Sort(this);
     this.sort.subscribe(this.provideSortType, 'sortClicked');
@@ -164,7 +212,7 @@ class View extends Observable implements IView {
   }
 
   public getFiltersCount(filterType: FiltersType): number {
-    return this.controller.getFilterCount(filterType);
+    return this.controller.getFilterFilms(filterType).length;
   }
 
   @bind
@@ -225,6 +273,8 @@ class View extends Observable implements IView {
     this.createSort();
     this.renderFilters();
     this.renderFilms(5);
+    this.renderExtraFilms('rated');
+    this.renderExtraFilms('commented');
     this.pageNodesMap.filmsQuantity.textContent = `${this.films.length} movies inside`;
   }
 

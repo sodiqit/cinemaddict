@@ -7,6 +7,7 @@ export const constants = {
     },
     MAIN_PAGE: {
       FILMS_CONTAINER: 'films-list__container',
+      FILMS_TITLE: 'films-list__title',
       FILMS_EXTRA: 'films-list--extra',
       SHOW_BUTTON: 'films-list__show-more',
       SORT: 'sort',

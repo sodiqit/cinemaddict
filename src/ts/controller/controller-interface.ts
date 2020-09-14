@@ -1,6 +1,7 @@
-import { FilmInfo, FiltersType } from '../model/model-interface';
+import { FilmInfo, FiltersType, SortType } from '../model/model-interface';
 
 export interface IController {
   getData(): FilmInfo[],
-  getFilterCount(filterType: FiltersType): number,
+  getFilterFilms(filterType: FiltersType): FilmInfo[],
+  getSortedFilms(sortType: SortType | 'comments'): FilmInfo[],
 }

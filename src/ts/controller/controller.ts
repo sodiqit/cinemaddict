@@ -1,4 +1,9 @@
-import { FilmInfo, IModel, FiltersType } from '../model/model-interface';
+import {
+  FilmInfo,
+  IModel,
+  FiltersType,
+  SortType,
+} from '../model/model-interface';
 import { Model } from '../model/model';
 import { View } from '../view/view';
 import { IView } from '../view/view-interface';
@@ -32,7 +37,11 @@ export class PageController implements IController {
     return this.model.getData();
   }
 
-  getFilterCount(filterType: FiltersType): number {
-    return this.model.getFilterCount(filterType);
+  getFilterFilms(filterType: FiltersType): FilmInfo[] {
+    return this.model.getFilterFilms(filterType);
+  }
+
+  getSortedFilms(sortType: SortType | 'comments'): FilmInfo[] {
+    return this.model.getSortedFilms(sortType);
   }
 }
